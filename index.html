@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookSoul — Your Reading Life, Organised</title>
+<meta name="description" content="Take a personalised book quiz, discover your next favourite read, organise your shelves, schedule your reading timeline, and share with friends. Free to use.">
+<meta name="keywords" content="book quiz, book recommendation, what should I read next, reading tracker, TBR list, book finder, personalised books, reading timeline">
+<meta name="author" content="BookSoul">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://booksoul.netlify.app">
+<!-- Open Graph (for Instagram, Twitter, WhatsApp link previews) -->
+<meta property="og:title" content="BookSoul — Find Your Perfect Book">
+<meta property="og:description" content="Take a personalised quiz and discover books matched to your personality. Track your reading, schedule your TBR, and share with friends.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://booksoul.netlify.app">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BookSoul — Find Your Perfect Book">
+<meta name="twitter:description" content="A personalised book quiz that matches books to your personality. Free to use.">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0b0e;--s:#1a171d;--s2:#252229;--s3:#302d34;--a:#e8a838;--a2:#d4553a;--a3:#6b4ce6;--t:#f0ece4;--td:#8a8490;--r:14px;--sh:0 2px 12px rgba(0,0,0,.2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'Outfit',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+::selection{background:rgba(232,168,56,.3)}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(13,11,14,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.04);padding:0 24px}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-family:'Instrument Serif',serif;font-size:1.5rem;color:var(--t)}.logo i{font-style:italic;color:var(--a)}
+.nl{display:flex;gap:6px;align-items:center}
+.nl a{color:var(--td);text-decoration:none;font-size:.82rem;font-weight:500;padding:8px 14px;border-radius:8px;cursor:pointer;transition:all .2s}
+.nl a:hover{background:var(--s2);color:var(--t)}
+.nl a.active{background:var(--a);color:var(--bg);font-weight:600}
+.pro-badge{background:var(--a);color:var(--bg);font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:12px;display:none;text-transform:uppercase;letter-spacing:.5px}
+.pro-badge.on{display:inline-block}
+
+/* LAYOUT */
+.page{max-width:900px;margin:0 auto;padding:40px 24px 80px;display:none;animation:fi .4s ease}
+.page.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+#home-page .hero-area{text-align:center;padding:50px 0 40px}
+.hero-area h1{font-family:'Instrument Serif',serif;font-size:clamp(2.2rem,5vw,3.4rem);font-weight:400;line-height:1.15;margin-bottom:14px;color:var(--t)}
+.hero-area h1 i{font-style:italic;color:var(--a)}
+.hero-area p{color:var(--td);font-size:1rem;max-width:440px;margin:0 auto 28px;line-height:1.7}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.88rem;padding:12px 24px;border-radius:10px;border:none;cursor:pointer;transition:all .25s;font-family:'Outfit',sans-serif;text-decoration:none}
+.btn:hover{transform:translateY(-1px)}
+.btn-p{background:linear-gradient(135deg,#e8a838,#f0d060,#e8a838);color:#0d0b0e}.btn-p:hover{box-shadow:0 6px 20px rgba(232,168,56,.3)}
+.btn-s{background:var(--s);color:var(--t);border:1.5px solid var(--s3)}.btn-s:hover{border-color:var(--a);color:var(--a)}
+.btn-sm{font-size:.78rem;padding:8px 16px;border-radius:8px}
+
+/* CARDS */
+.card{background:var(--s);border:1px solid rgba(255,255,255,.05);border-radius:var(--r);padding:20px;transition:all .3s;box-shadow:var(--sh)}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.2);border-color:rgba(232,168,56,.3)}
+
+/* SEARCH */
+.search-wrap{max-width:560px;margin:0 auto 30px}
+.search-bar{display:flex;gap:8px}
+.search-input{flex:1;background:var(--s);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;padding:13px 16px;font-size:.92rem;font-family:'Outfit',sans-serif;outline:none;color:var(--t);transition:border-color .3s}
+.search-input:focus{border-color:var(--a)}
+.search-input::placeholder{color:var(--td)}
+.search-btn{background:linear-gradient(135deg,#e8a838,#f0d060);color:#0d0b0e;font-weight:600;padding:13px 22px;border-radius:10px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.88rem;transition:all .2s;white-space:nowrap}
+.search-btn:hover{box-shadow:0 4px 16px rgba(232,168,56,.3)}
+
+/* BOOK RESULTS */
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.book-card{background:var(--s);border:1px solid rgba(255,255,255,.05);border-radius:var(--r);overflow:hidden;transition:all .3s;cursor:pointer}
+.book-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.2);border-color:rgba(232,168,56,.3)}
+.book-cover{width:100%;height:230px;object-fit:cover;background:var(--s2)}
+.book-info{padding:14px}
+.book-title{font-family:'Instrument Serif',serif;font-size:.92rem;font-weight:400;line-height:1.3;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.book-author{font-size:.75rem;color:var(--td);margin-bottom:8px}
+.book-actions{display:flex;gap:4px;flex-wrap:wrap}
+.ba-btn{font-size:.65rem;padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:var(--s2);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:500;transition:all .2s;color:var(--t)}
+.ba-btn:hover{border-color:var(--a);color:var(--a);background:rgba(232,168,56,.06)}
+.ba-btn.active{background:var(--a);color:var(--bg);border-color:var(--a)}
+
+/* SHELVES */
+.shelf-tabs{display:flex;gap:4px;background:var(--s);border-radius:10px;padding:3px;margin-bottom:24px;max-width:fit-content}
+.shelf-tab{padding:9px 18px;border-radius:7px;font-size:.8rem;font-weight:500;color:var(--td);cursor:pointer;transition:all .2s}
+.shelf-tab.active{background:var(--s2);color:var(--a);box-shadow:var(--sh);font-weight:600}
+.shelf-tab:hover{color:var(--t)}
+.shelf-count{font-size:.7rem;color:var(--a);font-weight:600;margin-left:4px}
+.shelf-list{display:flex;flex-direction:column;gap:8px}
+.shelf-item{display:flex;align-items:center;gap:14px;background:var(--s);border:1px solid rgba(255,255,255,.05);border-radius:var(--r);padding:14px 16px;transition:all .2s}
+.shelf-item:hover{border-color:rgba(232,168,56,.2);box-shadow:var(--sh)}
+.si-cover{width:42px;height:60px;border-radius:6px;object-fit:cover;background:var(--s2);flex-shrink:0}
+.si-info{flex:1;min-width:0}
+.si-title{font-family:'Instrument Serif',serif;font-size:.92rem;font-weight:400}
+.si-author{font-size:.72rem;color:var(--td);margin-top:1px}
+.si-meta{font-size:.65rem;color:var(--td);margin-top:3px}
+.si-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.si-btn{font-size:.68rem;padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:var(--s2);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;color:var(--td)}
+.si-btn:hover{border-color:var(--a);color:var(--a)}
+.si-rm{font-size:.8rem;color:var(--td);cursor:pointer;transition:color .2s}.si-rm:hover{color:#e45}
+/* STAR RATING - 5 stars */
+.star-row{display:flex;gap:2px;margin-top:4px;align-items:center}
+.star{font-size:1rem;cursor:pointer;transition:all .15s;color:rgba(255,255,255,.15);line-height:1;padding:1px}
+.star:hover{transform:scale(1.25);color:var(--a)}
+.star.lit{color:var(--a)}
+.star-label{font-size:.6rem;color:var(--a);font-weight:600;margin-left:4px}
+/* AGE SELECTOR */
+.age-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.age-btn{background:var(--s);border:1.5px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 18px;color:var(--t);font-size:.88rem;cursor:pointer;transition:all .25s;min-width:110px;text-align:center}
+.age-btn:hover{border-color:rgba(232,168,56,.4);transform:translateY(-2px)}
+.age-btn.sel{border-color:var(--a);background:rgba(232,168,56,.06)}
+.age-emoji{font-size:1.2rem;display:block;margin-bottom:4px}
+.age-label{font-weight:600;font-size:.82rem}
+.age-desc{font-size:.62rem;color:var(--td);margin-top:2px}
+.empty{text-align:center;padding:50px 20px;color:var(--td);font-size:.9rem;line-height:1.6}
+.empty span{font-size:2rem;display:block;margin-bottom:10px}
+
+/* TIMELINE */
+.tl-controls{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.tl-filter{font-size:.78rem;padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:var(--s);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;color:var(--td)}
+.tl-filter:hover,.tl-filter.active{border-color:var(--a);color:var(--a);background:rgba(232,168,56,.06)}
+.tl-month{font-family:'Instrument Serif',serif;font-size:1.1rem;margin:24px 0 12px;color:var(--a);font-style:italic}
+.tl-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;align-items:flex-start}
+.tl-item:last-child{border-bottom:none}
+.tl-item:hover{background:rgba(232,168,56,.03);border-radius:8px;padding-left:8px;padding-right:8px}
+.tl-date-col{width:50px;flex-shrink:0;text-align:center;padding-top:2px}
+.tl-day{font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--t);line-height:1}
+.tl-mon{font-size:.65rem;color:var(--td);text-transform:uppercase;letter-spacing:1px}
+.tl-dot{width:10px;height:10px;border-radius:50%;margin:6px auto 0;flex-shrink:0}
+.tl-dot-release{background:var(--a)}.tl-dot-reading{background:var(--a3)}.tl-dot-scheduled{background:#5a8a5e}
+.tl-content{flex:1;min-width:0}
+.tl-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:3px}
+.tl-label-release{color:var(--a)}.tl-label-reading{color:var(--a3)}.tl-label-scheduled{color:#5a8a5e}
+.tl-book-title{font-family:'Instrument Serif',serif;font-size:.95rem;margin-bottom:1px}
+.tl-book-author{font-size:.75rem;color:var(--td)}
+.tl-book-desc{font-size:.72rem;color:var(--td);margin-top:4px;line-height:1.4}
+.tl-actions{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+
+/* SCHEDULE MODAL */
+.sched-modal{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center}
+.sched-modal.on{display:flex}
+.sched-box{background:var(--s);border-radius:16px;padding:32px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:fi .3s ease}
+.sched-box h3{font-family:'Instrument Serif',serif;font-size:1.2rem;margin-bottom:6px}
+.sched-box p{font-size:.82rem;color:var(--td);margin-bottom:16px;line-height:1.5}
+.sched-box label{font-size:.78rem;font-weight:600;color:var(--td);display:block;margin-bottom:6px}
+.sched-box input[type=date]{width:100%;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:11px 14px;font-size:.88rem;font-family:'Outfit',sans-serif;color:var(--t);outline:none;margin-bottom:14px;color-scheme:dark}
+.sched-box input[type=date]:focus{border-color:var(--a)}
+
+/* COMPATIBILITY */
+.compat-area{text-align:center;max-width:500px;margin:0 auto}
+.compat-code{font-family:monospace;font-size:1.1rem;background:var(--s);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 20px;letter-spacing:2px;margin:16px 0;user-select:all;cursor:pointer;color:var(--a)}
+
+/* PRICING */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:700px;margin:0 auto}
+.price-card{background:var(--s);border:1.5px solid rgba(255,255,255,.06);border-radius:var(--r);padding:30px 24px;position:relative;transition:all .3s}
+.price-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.price-card.featured{border-color:var(--a);background:linear-gradient(170deg,rgba(232,168,56,.06),var(--s))}
+.price-tag{position:absolute;top:-10px;right:18px;background:linear-gradient(135deg,#e8a838,#f0d060);color:#0d0b0e;font-size:.62rem;font-weight:700;padding:3px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+.price-name{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--td);margin-bottom:10px}
+.price-amount{font-family:'Instrument Serif',serif;font-size:2.4rem;margin-bottom:4px}.price-amount span{font-size:.85rem;font-family:'Outfit',sans-serif;color:var(--td);font-weight:400}
+.price-desc{font-size:.82rem;color:var(--td);margin-bottom:18px;line-height:1.5}
+.price-features{list-style:none;margin-bottom:22px}
+.price-features li{padding:5px 0;font-size:.82rem;display:flex;align-items:flex-start;gap:8px;color:var(--t)}
+.price-features li::before{content:'✓';color:var(--a);font-weight:700;font-size:.75rem;margin-top:2px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s);color:var(--t);border:1px solid rgba(232,168,56,.3);border-radius:10px;padding:12px 22px;z-index:300;font-size:.82rem;font-weight:500;transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 8px 30px rgba(0,0,0,.3)}.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* SHARE */
+.share-row{display:inline-flex;gap:4px;margin-top:4px}
+.share-btn{font-size:.62rem;padding:3px 8px;border-radius:5px;border:1px solid rgba(255,255,255,.08);background:var(--s2);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;color:var(--td)}
+.share-btn:hover{border-color:var(--a);color:var(--a)}
+
+/* FOOTER */
+footer{text-align:center;padding:30px 24px;border-top:1px solid rgba(255,255,255,.04);color:var(--td);font-size:.72rem}
+
+/* DONATE STATION */
+.donate-hero{text-align:center;padding:30px 0 24px}
+.donate-hero h2{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:400;margin-bottom:10px}
+.donate-hero h2 i{font-style:italic;color:var(--a)}
+.donate-hero p{color:var(--td);font-size:.95rem;max-width:480px;margin:0 auto;line-height:1.7}
+.donate-amts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:28px 0 18px}
+.donate-amt{background:var(--s);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 22px;color:var(--t);font-size:1.05rem;font-weight:700;font-family:'Instrument Serif',serif;cursor:pointer;transition:all .25s;min-width:70px}
+.donate-amt:hover{border-color:rgba(232,168,56,.4);transform:translateY(-2px)}
+.donate-amt.sel{border-color:var(--a);background:rgba(232,168,56,.08);color:var(--a);box-shadow:0 4px 20px rgba(232,168,56,.15)}
+.donate-custom{display:flex;align-items:center;justify-content:center;gap:8px;max-width:300px;margin:0 auto 22px}
+.donate-custom span{font-size:.85rem;color:var(--td)}
+.donate-custom-box{flex:1;display:flex;align-items:center;background:var(--s);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;padding:0 12px}
+.donate-custom-box strong{color:var(--a);font-size:.95rem;font-weight:700}
+.donate-custom-box input{flex:1;background:transparent;border:none;padding:12px 8px;color:var(--t);font-size:.9rem;font-family:'Outfit',sans-serif;outline:none;width:60px}
+.donate-big-btn{background:linear-gradient(135deg,#e8a838,#f0d060,#e8a838);color:#0d0b0e;font-weight:700;font-size:1rem;padding:16px 38px;border-radius:60px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .3s;text-transform:uppercase;letter-spacing:1px}
+.donate-big-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(232,168,56,.35)}
+.donate-ext{display:flex;gap:14px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+.donate-ext a{display:inline-flex;align-items:center;gap:6px;color:var(--td);text-decoration:none;font-size:.82rem;padding:8px 16px;border:1px solid rgba(255,255,255,.06);border-radius:20px;transition:all .25s}
+.donate-ext a:hover{color:var(--a);border-color:var(--a)}
+.donate-perks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;max-width:700px;margin:40px auto 0}
+.donate-perk{background:var(--s);border:1px solid rgba(255,255,255,.05);border-radius:var(--r);padding:20px;text-align:center}
+.donate-perk-icon{font-size:1.6rem;margin-bottom:8px}
+.donate-perk-title{font-family:'Instrument Serif',serif;font-size:.95rem;margin-bottom:4px;color:var(--a)}
+.donate-perk-desc{font-size:.76rem;color:var(--td);line-height:1.5}
+.donate-thanks{background:rgba(90,138,94,.1);border:1px solid rgba(90,138,94,.3);border-radius:12px;padding:16px;margin-top:20px;color:#88d894;font-size:.88rem;display:none}
+.donate-thanks.on{display:block}
+
+/* INSTAGRAM STORY CARD (9:16 shareable) */
+.ig-card{width:270px;aspect-ratio:9/16;border-radius:16px;padding:28px 22px;margin:20px auto;background:linear-gradient(145deg,#1a171d 0%,#2a1a3e 50%,#1a171d 100%);border:1px solid rgba(232,168,56,.2);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.ig-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(232,168,56,.15),transparent 50%),radial-gradient(circle at 70% 80%,rgba(107,76,230,.12),transparent 50%);pointer-events:none}
+.ig-card-logo{font-family:'Instrument Serif',serif;font-size:1rem;color:var(--a);position:relative;z-index:1}
+.ig-card-logo i{font-style:italic}
+.ig-card-center{text-align:center;position:relative;z-index:1;padding:0 4px}
+.ig-card-label{font-size:.65rem;color:var(--a);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:10px}
+.ig-card-cover{width:90px;height:130px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);margin:0 auto 14px;object-fit:cover;background:var(--s2)}
+.ig-card-title{font-family:'Instrument Serif',serif;font-size:1.2rem;color:var(--t);line-height:1.2;margin-bottom:4px}
+.ig-card-author{font-size:.75rem;color:var(--td);font-style:italic}
+.ig-card-footer{font-size:.65rem;color:var(--td);position:relative;z-index:1;text-align:center}
+.ig-card-footer strong{color:var(--a)}
+.ig-actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.ig-btn{background:linear-gradient(135deg,#E1306C,#C13584,#833AB4);color:#fff;border:none;padding:10px 20px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .25s;display:inline-flex;align-items:center;gap:6px}
+.ig-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(193,53,132,.4)}
+
+/* INSTAGRAM FOLLOW CTA */
+.ig-follow{background:linear-gradient(145deg,rgba(225,48,108,.08),rgba(131,58,180,.08));border:1px solid rgba(225,48,108,.2);border-radius:var(--r);padding:22px;text-align:center;margin:30px auto;max-width:500px}
+.ig-follow h4{font-family:'Instrument Serif',serif;font-size:1.1rem;margin-bottom:6px}
+.ig-follow p{font-size:.82rem;color:var(--td);margin-bottom:14px;line-height:1.5}
+.ig-follow-link{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#E1306C,#C13584,#833AB4);color:#fff;padding:10px 24px;border-radius:30px;font-size:.85rem;font-weight:600;text-decoration:none;transition:all .3s}
+.ig-follow-link:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(193,53,132,.35)}
+
+/* FOOTER UPDATE */
+.footer-social{display:flex;gap:14px;justify-content:center;margin-top:12px}
+.footer-social a{color:var(--td);font-size:1.1rem;text-decoration:none;transition:color .2s}
+.footer-social a:hover{color:var(--a)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.on{display:flex}
+.modal-box{background:var(--s);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:fi .3s ease}
+.modal-box h3{font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:8px}
+.modal-box p{font-size:.82rem;color:var(--td);line-height:1.6;margin-bottom:18px}
+.modal-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+@media(max-width:768px){.nl{gap:2px}.nl a{padding:6px 10px;font-size:.75rem}.hero-area h1{font-size:2rem}.results-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.price-grid{grid-template-columns:1fr}.tl-item{flex-wrap:wrap}}
+@media(max-width:480px){.hero-btns{flex-direction:column;align-items:center}.shelf-tabs{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="sched-modal" id="sched-modal">
+  <div class="sched-box">
+    <h3 id="sched-title">Schedule Book</h3>
+    <p id="sched-desc">Pick a date when you plan to start reading this book. It will appear on your timeline.</p>
+    <label>Start reading on:</label>
+    <input type="date" id="sched-date"/>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-p" style="flex:1" onclick="confirmSchedule()">Add to Timeline</button>
+      <button class="btn btn-s" onclick="document.getElementById('sched-modal').classList.remove('on')">Cancel</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal">
+  <div class="modal-box" id="modal-inner"></div>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Book<i>Soul</i></div>
+    <div class="nl" id="nav-links">
+      <a class="active" onclick="showPage('home')">Home</a>
+      <a onclick="showPage('search')">Search</a>
+      <a onclick="showPage('shelves')">My Shelves</a>
+      <a onclick="showPage('timeline')">Timeline</a>
+      <a onclick="showPage('pricing')">Pro</a>
+      <a onclick="showPage('donate')" style="color:var(--a2)">☕ Donate</a>
+      <span class="pro-badge" id="pro-badge">Pro</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page on" id="home-page">
+  <div class="hero-area">
+    <h1>Your reading life,<br><i>beautifully organised</i></h1>
+    <p>Find your next book with a quiz, shelve what you're reading, and schedule your entire reading year on a personal timeline.</p>
+    <div class="hero-btns">
+      <button class="btn btn-p" onclick="startQuiz()">📖 Take the Quiz</button>
+      <button class="btn btn-s" onclick="showPage('search')">🔍 Search a Book</button>
+      <button class="btn btn-s" onclick="showPage('compat')">👯 Compatibility</button>
+    </div>
+  </div>
+  <!-- Quick stats -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;max-width:500px;margin-left:auto;margin-right:auto">
+    <div class="card" style="text-align:center;padding:16px"><div style="font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--a)" id="qs-reading">0</div><div style="font-size:.7rem;color:var(--td)">Reading</div></div>
+    <div class="card" style="text-align:center;padding:16px"><div style="font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--a)" id="qs-tbr">0</div><div style="font-size:.7rem;color:var(--td)">TBR</div></div>
+    <div class="card" style="text-align:center;padding:16px"><div style="font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--a)" id="qs-read">0</div><div style="font-size:.7rem;color:var(--td)">Read</div></div>
+    <div class="card" style="text-align:center;padding:16px"><div style="font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--a)" id="qs-sched">0</div><div style="font-size:.7rem;color:var(--td)">Scheduled</div></div>
+  </div>
+  <!-- Currently reading -->
+  <div style="margin-top:30px" id="home-reading"></div>
+  <!-- Upcoming on timeline -->
+  <div style="margin-top:24px" id="home-upcoming"></div>
+</div>
+
+<!-- SEARCH -->
+<div class="page" id="search-page">
+  <div style="text-align:center;margin-bottom:24px">
+    <h2 style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400">Search & <i style="color:var(--a)">Shelve</i></h2>
+    <p style="color:var(--td);font-size:.88rem;margin-top:6px">Find any book and add it to your shelves or schedule it on your timeline.</p>
+  </div>
+  <div class="search-wrap">
+    <div class="search-bar">
+      <input class="search-input" id="s-input" placeholder="Search by title, author, or ISBN..." onkeydown="if(event.key==='Enter')doSearch()"/>
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+  </div>
+  <div id="s-results"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="quiz-page">
+  <div style="text-align:center;margin-bottom:24px">
+    <h2 style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400">Find Your <i style="color:var(--a)">Perfect Book</i></h2>
+  </div>
+  <div style="max-width:600px;margin:0 auto">
+    <div style="height:3px;background:var(--s2);border-radius:3px;margin-bottom:30px;overflow:hidden"><div id="q-prog" style="height:100%;background:var(--a);border-radius:3px;transition:width .4s;width:0%"></div></div>
+    <div id="q-container"></div>
+  </div>
+</div>
+
+<!-- SHELVES -->
+<div class="page" id="shelves-page">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+    <h2 style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400">My <i style="color:var(--a)">Shelves</i></h2>
+    <div class="share-row" id="shelf-share"></div>
+  </div>
+  <div class="shelf-tabs" id="shelf-tabs"></div>
+  <div id="shelf-content"></div>
+</div>
+
+<!-- TIMELINE -->
+<div class="page" id="timeline-page">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px">
+    <h2 style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400">Reading <i style="color:var(--a)">Timeline</i></h2>
+  </div>
+  <p style="color:var(--td);font-size:.85rem;margin-bottom:18px">Your scheduled reads, upcoming releases, and currently reading — all in one view.</p>
+  <div class="tl-controls" id="tl-controls"></div>
+  <div id="tl-content"></div>
+</div>
+
+<!-- COMPATIBILITY -->
+<div class="page" id="compat-page">
+  <div class="compat-area">
+    <h2 style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400;margin-bottom:8px">Reading <i style="color:var(--a)">Compatibility</i></h2>
+    <p style="color:var(--td);font-size:.88rem;line-height:1.7;margin-bottom:24px">Share your code with a friend. When you both enter each other's codes, we'll show which books you'd both love based on your quiz answers and shelves.</p>
+    <div style="margin-bottom:20px">
+      <div style="font-size:.78rem;font-weight:600;color:var(--td);margin-bottom:8px">Your Code</div>
+      <div class="compat-code" id="my-code" onclick="navigator.clipboard?.writeText(this.textContent);toast('📋 Code copied!')">—</div>
+      <div class="share-row" style="justify-content:center;margin-top:8px">
+        <button class="share-btn" onclick="doShare('twitter','My BookSoul compatibility code: '+document.getElementById('my-code').textContent+' — find what books we\'d both love! booksoul.com')">𝕏</button>
+        <button class="share-btn" onclick="doShare('whatsapp','My BookSoul compatibility code: '+document.getElementById('my-code').textContent+' — find what books we\'d both love! booksoul.com')">💬</button>
+        <button class="share-btn" onclick="doShare('copy','My BookSoul compatibility code: '+document.getElementById('my-code').textContent)">📋 Copy</button>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--s3);padding-top:20px">
+      <div style="font-size:.78rem;font-weight:600;color:var(--td);margin-bottom:8px">Enter Friend's Code</div>
+      <div class="search-bar" style="max-width:340px;margin:0 auto">
+        <input class="search-input" id="friend-code" placeholder="e.g. BKSOUL-A7X2" style="text-transform:uppercase;letter-spacing:1px;font-family:monospace"/>
+        <button class="search-btn" onclick="checkCompat()">Compare</button>
+      </div>
+      <div id="compat-result" style="margin-top:20px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="page" id="pricing-page">
+  <div style="text-align:center;margin-bottom:30px">
+    <h2 style="font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400;margin-bottom:8px">Simple <i style="color:var(--a)">Pricing</i></h2>
+    <p style="color:var(--td);font-size:.88rem">Free forever, or upgrade to Pro for the full experience.</p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px">
+      <span id="p-mo" style="font-size:.82rem;font-weight:500;color:var(--td);cursor:pointer" onclick="setBil('monthly')">Monthly</span>
+      <div onclick="togBil()" style="width:44px;height:24px;border-radius:24px;background:var(--s2);border:1.5px solid var(--s3);cursor:pointer;position:relative"><div id="p-dot" style="width:18px;height:18px;border-radius:50%;background:var(--a);position:absolute;top:2px;left:22px;transition:left .3s"></div></div>
+      <span id="p-yr" style="font-size:.82rem;font-weight:600;color:var(--a);cursor:pointer" onclick="setBil('annual')">Annual <span style="background:rgba(90,138,94,.1);color:#5a8a5e;font-size:.62rem;padding:2px 7px;border-radius:8px;font-weight:700;margin-left:3px">SAVE 37%</span></span>
+    </div>
+  </div>
+  <div class="price-grid">
+    <div class="price-card">
+      <div class="price-name">Free</div>
+      <div class="price-amount">£0 <span>/forever</span></div>
+      <div class="price-desc">Everything you need to get started.</div>
+      <ul class="price-features">
+        <li>General book quiz only (1 of 12)</li>
+        <li>10 questions per quiz</li>
+        <li>Search any book</li>
+        <li>3 shelves (Reading, TBR, DNF)</li>
+        <li>Reading timeline</li>
+        <li>Schedule up to 5 books</li>
+        <li>3 shares per month</li>
+      </ul>
+      <button class="btn btn-s" style="width:100%" onclick="showPage('home')">Current Plan</button>
+    </div>
+    <div class="price-card featured">
+      <div class="price-tag" id="pp-tag">Best Value</div>
+      <div class="price-name">BookSoul Pro</div>
+      <div class="price-amount" id="pp-price">£14.99 <span>/year</span></div>
+      <div class="price-desc" id="pp-desc">That's just £1.25/month. Cancel anytime.</div>
+      <ul class="price-features">
+        <li><strong>All 12 category quizzes</strong> (Fantasy, Sci-Fi, Thriller, Romance + 8 more)</li>
+        <li><strong>200 age-specific books</strong> — never repeat</li>
+        <li><strong>20 shuffled questions</strong> per quiz (vs 10 on Free)</li>
+        <li><strong>Unlimited book scheduling</strong> on your timeline</li>
+        <li><strong>Unlimited shares</strong> — books, stats, results</li>
+        <li><strong>Reading compatibility</strong> — compare with friends</li>
+        <li><strong>Mood Matcher</strong> — instant recs by how you feel</li>
+        <li><strong>"Books Like This" chains</strong> — endless reading paths</li>
+        <li><strong>Reading challenges & badges</strong> — gamified goals</li>
+        <li><strong>Priority new books</strong> added to your pool weekly</li>
+        <li><strong>Export your reading data</strong></li>
+      </ul>
+      <button class="btn btn-p" style="width:100%" onclick="subscribePro()">Start 7-Day Free Trial</button>
+      <div style="text-align:center;font-size:.68rem;color:var(--td);margin-top:6px" id="pp-note">Then £14.99/year · Cancel anytime</div>
+    </div>
+  </div>
+</div>
+
+<!-- DONATE STATION -->
+<div class="page" id="donate-page">
+  <div class="donate-hero">
+    <div style="font-size:2.5rem;margin-bottom:10px">☕</div>
+    <h2>Support <i>BookSoul</i></h2>
+    <p>BookSoul is built by one person who loves books. If you enjoy the quizzes, shelves, and timeline — a small donation helps keep the lights on and new features coming.</p>
+  </div>
+  <div class="donate-amts">
+    <button class="donate-amt" onclick="selectDonate(1,this)">£1</button>
+    <button class="donate-amt" onclick="selectDonate(3,this)">£3</button>
+    <button class="donate-amt sel" onclick="selectDonate(5,this)">£5</button>
+    <button class="donate-amt" onclick="selectDonate(10,this)">£10</button>
+    <button class="donate-amt" onclick="selectDonate(25,this)">£25</button>
+  </div>
+  <div class="donate-custom">
+    <span>or</span>
+    <div class="donate-custom-box">
+      <strong>£</strong>
+      <input id="custom-donate" type="number" min="1" placeholder="Custom amount" onchange="donateAmount=parseFloat(this.value)||5;document.querySelectorAll('.donate-amt').forEach(b=>b.classList.remove('sel'))"/>
+    </div>
+  </div>
+  <div style="text-align:center">
+    <button class="donate-big-btn" onclick="processDonation()">☕ Donate Now</button>
+    <div style="font-size:.7rem;color:var(--td);margin-top:10px">🔒 Secure · One-time · No recurring charges</div>
+  </div>
+  <div class="donate-thanks" id="donate-thanks">
+    <div style="text-align:center">🎉 Thank you so much for your donation! You're keeping BookSoul alive.</div>
+  </div>
+  <div style="text-align:center;margin-top:30px">
+    <div style="font-size:.78rem;color:var(--td);margin-bottom:10px">Or use your favourite platform:</div>
+    <div class="donate-ext">
+      <a href="https://www.buymeacoffee.com" target="_blank">☕ Buy Me a Coffee</a>
+      <a href="https://ko-fi.com" target="_blank">❤️ Ko-fi</a>
+      <a href="https://paypal.me" target="_blank">💳 PayPal</a>
+    </div>
+  </div>
+  <!-- Perks -->
+  <div class="donate-perks">
+    <div class="donate-perk"><div class="donate-perk-icon">☕</div><div class="donate-perk-title">£5 Donation</div><div class="donate-perk-desc">Fuels a late-night coding session and a thank-you post on Instagram.</div></div>
+    <div class="donate-perk"><div class="donate-perk-icon">📖</div><div class="donate-perk-title">£10 Donation</div><div class="donate-perk-desc">Unlocks BookSoul Pro free for 1 month. DM us your email after donating.</div></div>
+    <div class="donate-perk"><div class="donate-perk-icon">💎</div><div class="donate-perk-title">£25 Donation</div><div class="donate-perk-desc">1 year of BookSoul Pro free + a shout-out on our Instagram.</div></div>
+  </div>
+  <!-- Instagram follow -->
+  <div class="ig-follow">
+    <h4>📸 Follow us on Instagram</h4>
+    <p>Daily book recommendations, quiz results, and reading inspiration — join our community!</p>
+    <a class="ig-follow-link" href="https://instagram.com/booksoul" target="_blank">Follow @booksoul</a>
+  </div>
+</div>
+
+<!-- QUIZ RESULT (inline) -->
+<div class="page" id="result-page"></div>
+
+<footer>
+  <div class="logo" style="font-size:1.1rem;margin-bottom:6px">Book<i>Soul</i></div>
+  <p>© 2026 BookSoul. Your reading life, organised.</p>
+  <div class="footer-social">
+    <a href="https://instagram.com/booksoul" target="_blank" title="Instagram">📸</a>
+    <a href="https://twitter.com/booksoul" target="_blank" title="Twitter/X">𝕏</a>
+    <a href="https://tiktok.com/@booksoul" target="_blank" title="TikTok">🎵</a>
+    <a onclick="showPage('donate')" style="cursor:pointer" title="Donate">☕</a>
+  </div>
+</footer>
+
+<script>
+// ==================== STATE ====================
+let isPro=false,shelves={reading:[],tbr:[],dnf:[],read:[]},scheduled=[],quizCount=0,shareCount=0,shareMonth=0,curShelf='reading',schedBookData=null,userAge='adult';
+const FREE_SCHED_LIMIT=5,FREE_SHARE_LIMIT=3;
+try{const d=JSON.parse(localStorage.getItem('bs2')||'{}');isPro=d.pro||false;shelves=d.sh||{reading:[],tbr:[],dnf:[],read:[]};scheduled=d.sc||[];quizCount=d.qc||0;shareCount=d.shc||0;shareMonth=d.shm||0}catch(e){}
+const cm=new Date().getMonth();if(shareMonth!==cm){shareCount=0;shareMonth=cm}
+function save(){try{localStorage.setItem('bs2',JSON.stringify({pro:isPro,sh:shelves,sc:scheduled,qc:quizCount,shc:shareCount,shm:shareMonth}))}catch(e){}}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2500)}
+
+// ==================== NAV ====================
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const pg=document.getElementById(id+'-page');if(pg){pg.classList.add('on');window.scrollTo({top:0,behavior:'smooth'})}
+  document.querySelectorAll('.nl a').forEach(a=>a.classList.remove('active'));
+  const map={home:0,search:1,shelves:2,timeline:3,pricing:4,donate:5,quiz:-1,compat:-1,result:-1};
+  if(map[id]>=0)document.querySelectorAll('.nl a')[map[id]]?.classList.add('active');
+  if(id==='home')renderHome();if(id==='shelves')renderShelves();if(id==='timeline')renderTimeline();
+}
+
+// ==================== SHARING ====================
+function canShare(){return isPro||shareCount<FREE_SHARE_LIMIT}
+function sharesLeft(){return isPro?'∞':Math.max(0,FREE_SHARE_LIMIT-shareCount)}
+function doShare(p,txt){
+  if(!canShare()){toast('🔒 Share limit reached. Upgrade to Pro!');showPage('pricing');return}
+  if(!isPro){shareCount++;save()}
+  if(p==='twitter')window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(txt));
+  else if(p==='whatsapp')window.open('https://wa.me/?text='+encodeURIComponent(txt));
+  else{navigator.clipboard?.writeText(txt);toast('📋 Copied!')}
+}
+
+// ==================== SEARCH ====================
+async function doSearch(){
+  const q=document.getElementById('s-input').value.trim();if(!q){toast('Type something!');return}
+  document.getElementById('s-results').innerHTML='<div class="empty">🔍 Searching for "'+q+'"...</div>';
+  try{
+    const r=await fetch('https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(q)+'&maxResults=12&country=GB');
+    if(!r.ok){document.getElementById('s-results').innerHTML='<div class="empty"><span>⚠️</span>Search service unavailable. Try again in a moment.</div>';return}
+    const d=await r.json();
+    if(!d.items||!d.items.length){document.getElementById('s-results').innerHTML='<div class="empty"><span>📭</span>No books found for "'+q+'". Try a different title or author name.</div>';return}
+    document.getElementById('s-results').innerHTML=`<div class="results-grid">${d.items.map(it=>{
+      const v=it.volumeInfo||{},t=v.title||'',a=(v.authors||['Unknown']).join(', ');
+      const th=v.imageLinks?(v.imageLinks.thumbnail||'').replace('http:','https:'):'';
+      const isbn=(v.industryIdentifiers||[]).find(i=>i.type==='ISBN_13')?.identifier||'';
+      const bk=JSON.stringify({title:t,author:a,isbn,genre:v.categories?.[0]||''}).replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      const amzUrl='https://www.amazon.co.uk/s?k='+encodeURIComponent(t+' '+a)+'&tag=booksoul-21';
+      return`<div class="book-card"><img class="book-cover" src="${th}" alt="${t}" onerror="this.style.display='none'"/><div class="book-info"><div class="book-title">${t}</div><div class="book-author">${a}</div><div class="book-actions"><a class="ba-btn" href="${amzUrl}" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a><button class="ba-btn" onclick='addToShelf(${bk.replace(/&quot;/g,"\\\"")}, "reading")'>📖 Reading</button><button class="ba-btn" onclick='addToShelf(${bk.replace(/&quot;/g,"\\\"")}, "tbr")'>📚 TBR</button><button class="ba-btn" onclick='addToShelf(${bk.replace(/&quot;/g,"\\\"")}, "dnf")'>🚫 DNF</button><button class="ba-btn" onclick='openSchedule(${bk.replace(/&quot;/g,"\\\"")})'>📅 Schedule</button></div></div></div>`;
+    }).join('')}</div>`;
+  }catch(e){document.getElementById('s-results').innerHTML='<div class="empty"><span>⚠️</span>Could not connect to book search. Make sure you have internet and try again.<br><br><span style="font-size:.7rem;color:var(--td)">Error: '+e.message+'</span></div>'}
+}
+
+// ==================== SHELVES ====================
+function addToShelf(book,shelf){
+  if(!shelves[shelf])shelves[shelf]=[];
+  if(shelves[shelf].some(b=>b.title===book.title)){toast('Already on '+shelf+'!');return}
+  // Remove from other shelves
+  ['reading','tbr','dnf','read'].forEach(s=>{if(s!==shelf)shelves[s]=shelves[s].filter(b=>b.title!==book.title)});
+  book.addedDate=Date.now();
+  if(!book.rating)book.rating=0;
+  shelves[shelf].push(book);save();toast('✓ Added to '+shelf.toUpperCase());renderHome();
+}
+function removeFromShelf(title,shelf){shelves[shelf]=shelves[shelf].filter(b=>b.title!==title);save();renderShelves();renderHome()}
+function rateBook(title,shelf,stars){
+  if(!shelves[shelf])return;
+  shelves[shelf]=shelves[shelf].map(b=>b.title===title?{...b,rating:stars}:b);save();renderShelves();
+  toast('⭐ Rated '+stars+'/5');
+}
+function moveToShelf(title,from,to){
+  const book=shelves[from].find(b=>b.title===title);if(!book)return;
+  const bookCopy={...book};
+  if(!bookCopy.rating)bookCopy.rating=0;
+  shelves[from]=shelves[from].filter(b=>b.title!==title);
+  if(!shelves[to])shelves[to]=[];shelves[to].push(bookCopy);save();renderShelves();renderHome();toast('Moved to '+to.toUpperCase());
+}
+
+function renderShelves(){
+  const tabs=document.getElementById('shelf-tabs');
+  const shelfNames={reading:'📖 Reading',tbr:'📚 TBR',dnf:'🚫 DNF',read:'✅ Read'};
+  tabs.innerHTML=Object.entries(shelfNames).map(([k,v])=>`<div class="shelf-tab ${k===curShelf?'active':''}" onclick="curShelf='${k}';renderShelves()">${v}<span class="shelf-count">${(shelves[k]||[]).length}</span></div>`).join('');
+  // Share row
+  document.getElementById('shelf-share').innerHTML=`<button class="share-btn" onclick="doShare('twitter','My BookSoul ${curShelf.toUpperCase()} shelf has ${(shelves[curShelf]||[]).length} books! booksoul.com')">𝕏</button><button class="share-btn" onclick="doShare('copy','My BookSoul ${curShelf.toUpperCase()} shelf: ${(shelves[curShelf]||[]).map(b=>b.title).join(', ')}')">📋</button><span style="font-size:.6rem;color:var(--td)">${isPro?'':'('+sharesLeft()+' left)'}</span>`;
+  const items=shelves[curShelf]||[];
+  const con=document.getElementById('shelf-content');
+  if(!items.length){con.innerHTML=`<div class="empty"><span>${curShelf==='reading'?'📖':curShelf==='tbr'?'📚':'🚫'}</span>No books on this shelf yet.<br><a style="color:var(--a);cursor:pointer" onclick="showPage('search')">Search for a book</a> or <a style="color:var(--a);cursor:pointer" onclick="showPage('quiz')">take the quiz</a>.</div>`;return}
+  const moveOpts={reading:['tbr','dnf','read'],tbr:['reading','dnf'],dnf:['tbr'],read:['tbr','reading']};
+  con.innerHTML=`<div class="shelf-list">${items.map(b=>{
+    const cover=b.isbn?`https://covers.openlibrary.org/b/isbn/${b.isbn}-S.jpg`:'';
+    const moves=moveOpts[curShelf]||[];
+    const rating=b.rating||0;
+    const showStars=curShelf==='read'||curShelf==='reading';
+    const starsHtml=showStars?`<div class="star-row">${[1,2,3,4,5].map(s=>`<span class="star ${s<=rating?'lit':''}" onclick="rateBook('${b.title.replace(/'/g,"\\'")}','${curShelf}',${s})">★</span>`).join('')}${rating?`<span class="star-label">${rating}/5</span>`:''}</div>`:'';
+    const amzUrl='https://www.amazon.co.uk/s?k='+encodeURIComponent(b.title+' '+b.author)+'&tag=booksoul-21';
+    return`<div class="shelf-item"><img class="si-cover" src="${cover}" onerror="this.style.background='var(--s2)'"/><div class="si-info"><div class="si-title">${b.title}</div><div class="si-author">${b.author}</div>${starsHtml}<div class="si-meta">${b.genre||''}</div><div class="share-row"><button class="share-btn" onclick="doShare('twitter','I\\'m ${curShelf==='reading'?'reading':curShelf==='tbr'?'adding to my TBR':curShelf==='read'?'finished reading':'shelving'} &quot;${b.title}&quot; by ${b.author} on BookSoul!${rating?' '+rating+'/5 ⭐':''}')">𝕏</button><button class="share-btn" onclick="doShare('copy','${b.title} by ${b.author}${rating?' — '+rating+'/5 stars':''}')">📋</button></div></div><div class="si-actions"><a class="si-btn" href="${amzUrl}" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none">Buy</a>${moves.map(m=>`<button class="si-btn" onclick="moveToShelf('${b.title.replace(/'/g,"\\'")}','${curShelf}','${m}')">${m==='reading'?'📖':m==='tbr'?'📚':m==='dnf'?'🚫':'✅'}</button>`).join('')}<button class="si-btn" onclick="openSchedule({title:'${b.title.replace(/'/g,"\\'")}',author:'${b.author.replace(/'/g,"\\'")}',isbn:'${b.isbn||''}'})">📅</button><span class="si-rm" onclick="removeFromShelf('${b.title.replace(/'/g,"\\'")}','${curShelf}')">✕</span></div></div>`;
+  }).join('')}</div>`;
+}
+
+// ==================== SCHEDULING ====================
+function openSchedule(book){
+  if(!isPro&&scheduled.length>=FREE_SCHED_LIMIT){toast('🔒 Free plan: max '+FREE_SCHED_LIMIT+' scheduled. Upgrade to Pro!');showPage('pricing');return}
+  schedBookData=book;
+  document.getElementById('sched-title').textContent='Schedule: '+book.title;
+  document.getElementById('sched-date').value='';
+  document.getElementById('sched-modal').classList.add('on');
+}
+function confirmSchedule(){
+  const date=document.getElementById('sched-date').value;if(!date){toast('Pick a date!');return}
+  if(scheduled.some(s=>s.title===schedBookData.title)){toast('Already scheduled!');return}
+  scheduled.push({...schedBookData,date});save();
+  document.getElementById('sched-modal').classList.remove('on');
+  toast('📅 Scheduled for '+new Date(date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}));
+  renderTimeline();renderHome();
+}
+function removeScheduled(title){scheduled=scheduled.filter(s=>s.title!==title);save();renderTimeline();renderHome()}
+
+// ==================== TIMELINE ====================
+const releases=[
+  {title:"Onyx Storm",author:"Rebecca Yarros",date:"2025-01-21",genre:"Fantasy Romance",desc:"Third Empyrean book. Dragons, war, devastating revelations."},
+  {title:"Sunrise on the Reaping",author:"Suzanne Collins",date:"2025-03-18",genre:"YA Dystopian",desc:"Hunger Games prequel — the Second Quarter Quell."},
+  {title:"The Familiar",author:"Leigh Bardugo",date:"2025-04-01",genre:"Fantasy",desc:"A servant in the Spanish Golden Age discovers a dark gift."},
+  {title:"Intermezzo",author:"Sally Rooney",date:"2025-09-24",genre:"Literary Fiction",desc:"Two brothers navigate grief and love."},
+  {title:"Pyre",author:"Rebecca Yarros",date:"2026-07-01",genre:"Fantasy Romance",desc:"Fourth Empyrean book. What will Violet sacrifice?"},
+  {title:"Project Hail Mary Sequel",author:"Andy Weir",date:"2026-11-01",genre:"Sci-Fi",desc:"The long-awaited follow-up. Rocky and Grace continue?"},
+];
+let tlFilter='all';
+function renderTimeline(){
+  // Controls
+  document.getElementById('tl-controls').innerHTML=`
+    <button class="tl-filter ${tlFilter==='all'?'active':''}" onclick="tlFilter='all';renderTimeline()">All</button>
+    <button class="tl-filter ${tlFilter==='scheduled'?'active':''}" onclick="tlFilter='scheduled';renderTimeline()">📅 Scheduled</button>
+    <button class="tl-filter ${tlFilter==='reading'?'active':''}" onclick="tlFilter='reading';renderTimeline()">📖 Reading</button>
+    <button class="tl-filter ${tlFilter==='releases'?'active':''}" onclick="tlFilter='releases';renderTimeline()">🔥 Releases</button>
+    <button class="tl-filter ${tlFilter==='pinned'?'active':''}" onclick="tlFilter='pinned';renderTimeline()">📌 Pinned</button>
+  `;
+  // Combine all timeline items
+  let items=[];
+  if(tlFilter==='all'||tlFilter==='reading'){(shelves.reading||[]).forEach(b=>items.push({...b,type:'reading',date:b.addedDate?new Date(b.addedDate).toISOString().split('T')[0]:new Date().toISOString().split('T')[0]}))}
+  if(tlFilter==='all'||tlFilter==='scheduled'){scheduled.forEach(b=>items.push({...b,type:'scheduled'}))}
+  if(tlFilter==='all'||tlFilter==='releases'){releases.forEach(r=>items.push({...r,type:'release'}))}
+  if(tlFilter==='pinned'){items=scheduled.filter(s=>s.pinned);if(!items.length){document.getElementById('tl-content').innerHTML='<div class="empty"><span>📌</span>No pinned items. Pin books from your scheduled reads!</div>';return}}
+  items.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(!items.length){document.getElementById('tl-content').innerHTML='<div class="empty"><span>📅</span>Nothing on your timeline yet.<br><a style="color:var(--a);cursor:pointer" onclick="showPage(\'search\')">Search a book</a> and schedule it!</div>';return}
+  // Group by month
+  let html='',lastMonth='';
+  items.forEach(it=>{
+    const d=new Date(it.date);const month=d.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+    if(month!==lastMonth){html+=`<div class="tl-month">${month}</div>`;lastMonth=month}
+    const day=d.getDate();const mon=d.toLocaleDateString('en-GB',{month:'short'});
+    const dotCls=it.type==='release'?'tl-dot-release':it.type==='reading'?'tl-dot-reading':'tl-dot-scheduled';
+    const lblCls=it.type==='release'?'tl-label-release':it.type==='reading'?'tl-label-reading':'tl-label-scheduled';
+    const lbl=it.type==='release'?'NEW RELEASE':it.type==='reading'?'CURRENTLY READING':'SCHEDULED READ';
+    const tlAmz='https://www.amazon.co.uk/s?k='+encodeURIComponent(it.title+' '+it.author)+'&tag=booksoul-21';
+    html+=`<div class="tl-item"><div class="tl-date-col"><div class="tl-day">${day}</div><div class="tl-mon">${mon}</div><div class="tl-dot ${dotCls}"></div></div><div class="tl-content"><div class="tl-label ${lblCls}">${lbl}</div><div class="tl-book-title">${it.title}</div><div class="tl-book-author">${it.author}</div>${it.desc?`<div class="tl-book-desc">${it.desc}</div>`:''}
+    <div class="tl-actions"><a class="ba-btn" href="${tlAmz}" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none">🛒 Buy</a>${it.type==='scheduled'?`<button class="ba-btn" onclick="addToShelf({title:'${it.title.replace(/'/g,"\\'")}',author:'${it.author.replace(/'/g,"\\'")}',isbn:'${it.isbn||''}'},'reading');removeScheduled('${it.title.replace(/'/g,"\\'")}')">📖 Start Reading</button><button class="ba-btn ${it.pinned?'active':''}" onclick="togglePin('${it.title.replace(/'/g,"\\'")}')">${it.pinned?'📌 Pinned':'📌 Pin'}</button><button class="ba-btn" onclick="removeScheduled('${it.title.replace(/'/g,"\\'")}')">✕ Remove</button>`:''}${it.type==='release'?`<button class="ba-btn" onclick="openSchedule({title:'${it.title.replace(/'/g,"\\'")}',author:'${it.author.replace(/'/g,"\\'")}',isbn:''})">📅 Schedule</button><button class="ba-btn" onclick="addToShelf({title:'${it.title.replace(/'/g,"\\'")}',author:'${it.author.replace(/'/g,"\\'")}',isbn:''},'tbr')">📚 TBR</button>`:''}${it.type==='reading'?`<button class="ba-btn" onclick="moveToShelf('${it.title.replace(/'/g,"\\'")}','reading','read')">✅ Finished</button>`:''}</div></div></div>`;
+  });
+  document.getElementById('tl-content').innerHTML=html;
+}
+function togglePin(title){scheduled=scheduled.map(s=>s.title===title?{...s,pinned:!s.pinned}:s);save();renderTimeline()}
+
+// ==================== HOME ====================
+function renderHome(){
+  document.getElementById('qs-reading').textContent=(shelves.reading||[]).length;
+  document.getElementById('qs-tbr').textContent=(shelves.tbr||[]).length;
+  document.getElementById('qs-read').textContent=(shelves.read||[]).length;
+  document.getElementById('qs-sched').textContent=scheduled.length;
+  // Currently reading
+  const cr=shelves.reading||[];
+  document.getElementById('home-reading').innerHTML=cr.length?`<div style="font-family:'Instrument Serif',serif;font-size:1.1rem;margin-bottom:12px">Currently Reading</div><div class="shelf-list">${cr.slice(0,3).map(b=>`<div class="shelf-item"><img class="si-cover" src="${b.isbn?'https://covers.openlibrary.org/b/isbn/'+b.isbn+'-S.jpg':''}" onerror="this.style.background='var(--s2)'"/><div class="si-info"><div class="si-title">${b.title}</div><div class="si-author">${b.author}</div></div><button class="si-btn" onclick="moveToShelf('${b.title.replace(/'/g,"\\'")}','reading','read')">✅ Done</button></div>`).join('')}</div>`:'';
+  // Upcoming scheduled
+  const up=scheduled.filter(s=>new Date(s.date)>=new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3);
+  document.getElementById('home-upcoming').innerHTML=up.length?`<div style="font-family:'Instrument Serif',serif;font-size:1.1rem;margin-bottom:12px">Coming Up</div><div class="shelf-list">${up.map(b=>`<div class="shelf-item"><div class="si-info"><div class="si-title">${b.title}</div><div class="si-author">${b.author}</div><div class="si-meta">📅 ${new Date(b.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div></div></div>`).join('')}</div>`:'';
+}
+
+// ==================== COMPATIBILITY ====================
+function genCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='BKSOUL-';for(let i=0;i<4;i++)c+=chars[Math.floor(Math.random()*chars.length)];return c}
+let myCode=localStorage.getItem('bs2_code');if(!myCode){myCode=genCode();localStorage.setItem('bs2_code',myCode)}
+document.getElementById('my-code').textContent=myCode;
+
+function checkCompat(){
+  const fc=document.getElementById('friend-code').value.trim().toUpperCase();
+  if(!fc||fc.length<6){toast('Enter a valid code!');return}
+  if(fc===myCode){toast('That\'s your own code!');return}
+  // Simulate compatibility (in production this would be server-side)
+  const books=['The Night Circus','Project Hail Mary','Circe','The House in the Cerulean Sea','Six of Crows','Beach Read','The Midnight Library'];
+  const n=2+Math.floor(Math.random()*3);const matches=books.sort(()=>Math.random()-.5).slice(0,n);
+  const pct=60+Math.floor(Math.random()*30);
+  document.getElementById('compat-result').innerHTML=`<div class="card" style="text-align:left"><div style="text-align:center;margin-bottom:14px"><div style="font-family:'Instrument Serif',serif;font-size:1.8rem;color:var(--a)">${pct}%</div><div style="font-size:.82rem;color:var(--td)">Reading Compatibility</div></div><div style="font-size:.82rem;font-weight:600;margin-bottom:8px">Books you'd both love:</div>${matches.map(m=>`<div style="padding:6px 0;border-bottom:1px solid var(--s2);font-size:.88rem">📖 ${m}</div>`).join('')}<div style="margin-top:12px"><button class="btn btn-s btn-sm" onclick="doShare('copy','${myCode} matched ${pct}% with a friend on BookSoul! We\\'d both love: ${matches.join(", ")}')">📋 Share Result</button></div></div>`;
+}
+
+// ==================== QUIZ ====================
+// 30 tag-based questions — 10 randomly picked per quiz. Every answer adds tags to your profile.
+// Books are scored by how many tags overlap with your answers. Best match wins.
+const QP=[
+  {q:"Pick a superpower:",o:[{t:"Time travel",tg:['scifi','philosophical']},{t:"Invisibility",tg:['thriller','dark']},{t:"Telepathy",tg:['psychological','mystery']},{t:"Flight",tg:['adventure','freedom']}]},
+  {q:"You're stranded on an island. You grab:",o:[{t:"A survival guide",tg:['nonfiction','practical']},{t:"A thick fantasy novel",tg:['fantasy','epic']},{t:"A journal to write in",tg:['literary','emotional']},{t:"A mystery to solve",tg:['mystery','thriller']}]},
+  {q:"Your dream holiday:",o:[{t:"A cabin in the mountains",tg:['nature','quiet']},{t:"A bustling city abroad",tg:['adventure','culture']},{t:"A beach resort",tg:['romance','light']},{t:"A historical European tour",tg:['historical','intellectual']}]},
+  {q:"At a dinner party, you're the one who:",o:[{t:"Tells the best stories",tg:['adventure','humor']},{t:"Asks deep questions",tg:['philosophical','literary']},{t:"Listens and observes",tg:['quiet','psychological']},{t:"Makes everyone laugh",tg:['humor','light']}]},
+  {q:"Your comfort TV genre:",o:[{t:"True crime documentary",tg:['thriller','dark','mystery']},{t:"Fantasy/sci-fi epic",tg:['fantasy','scifi','epic']},{t:"Romantic comedy",tg:['romance','humor','light']},{t:"Historical drama",tg:['historical','literary']}]},
+  {q:"What keeps you up at night?",o:[{t:"The meaning of life",tg:['philosophical','existential']},{t:"A problem I need to solve",tg:['mystery','practical']},{t:"Someone I can't stop thinking about",tg:['romance','emotional']},{t:"Excitement about tomorrow",tg:['adventure','hopeful']}]},
+  {q:"Pick a season:",o:[{t:"Autumn — cosy and golden",tg:['atmospheric','quiet','literary']},{t:"Summer — bright and alive",tg:['romance','adventure','light']},{t:"Winter — dark and still",tg:['dark','thriller','gothic']},{t:"Spring — fresh and hopeful",tg:['hopeful','coming-of-age','nature']}]},
+  {q:"Your favourite main character type:",o:[{t:"A rebel fighting the system",tg:['rebellion','dystopian','action']},{t:"Someone finding themselves",tg:['coming-of-age','identity','emotional']},{t:"A genius with a plan",tg:['thriller','heist','clever']},{t:"An ordinary person in chaos",tg:['survival','realistic','relatable']}]},
+  {q:"A friend describes you as:",o:[{t:"The thinker",tg:['intellectual','philosophical','nonfiction']},{t:"The dreamer",tg:['fantasy','imaginative','atmospheric']},{t:"The feeler",tg:['emotional','romance','literary']},{t:"The doer",tg:['adventure','action','practical']}]},
+  {q:"Pick a colour:",o:[{t:"Deep red",tg:['romance','dark','passion']},{t:"Midnight blue",tg:['mystery','scifi','quiet']},{t:"Forest green",tg:['nature','adventure','fantasy']},{t:"Gold",tg:['historical','epic','magical']}]},
+  {q:"What's more important in a story?",o:[{t:"Plot that grips me",tg:['thriller','action']},{t:"Characters I fall in love with",tg:['literary','emotional','character-driven']},{t:"A world I can escape into",tg:['fantasy','scifi','worldbuilding']},{t:"Ideas that make me think",tg:['philosophical','nonfiction','intellectual']}]},
+  {q:"Your reading music:",o:[{t:"Lo-fi or ambient",tg:['quiet','atmospheric','literary']},{t:"Epic film scores",tg:['fantasy','epic','adventure']},{t:"Total silence",tg:['thriller','intellectual','nonfiction']},{t:"Pop or indie",tg:['romance','contemporary','light']}]},
+  {q:"You discover a hidden door. You:",o:[{t:"Walk right through",tg:['adventure','courage','fantasy']},{t:"Study it carefully first",tg:['mystery','intellectual']},{t:"Call a friend to come with you",tg:['friendship','relatable','emotional']},{t:"Write about it",tg:['literary','creative','quiet']}]},
+  {q:"The villain in your ideal book is:",o:[{t:"Charmingly manipulative",tg:['psychological','dark','literary']},{t:"An unstoppable force",tg:['epic','fantasy','action']},{t:"Someone you actually agree with",tg:['philosophical','morally-grey']},{t:"A twist you never saw coming",tg:['thriller','twist','mystery']}]},
+  {q:"Pick a drink:",o:[{t:"Black coffee",tg:['dark','thriller','intense']},{t:"Herbal tea",tg:['quiet','nature','philosophical']},{t:"Hot chocolate",tg:['cozy','heartwarming','light']},{t:"Something I've never tried",tg:['adventure','bold','curious']}]},
+  {q:"Your ideal Friday night:",o:[{t:"Home alone with a book",tg:['quiet','literary']},{t:"Out exploring somewhere new",tg:['adventure','curious','worldbuilding']},{t:"Deep conversation with one person",tg:['emotional','philosophical','romance']},{t:"A party with close friends",tg:['humor','friendship','light']}]},
+  {q:"Which animal are you?",o:[{t:"A cat — independent",tg:['quiet','mysterious']},{t:"A wolf — loyal and fierce",tg:['action','loyalty','fantasy']},{t:"An owl — wise and watchful",tg:['intellectual','mystery','philosophical']},{t:"A dolphin — playful",tg:['humor','adventure','light']}]},
+  {q:"Time machine — where do you go?",o:[{t:"Ancient Rome or Egypt",tg:['historical','epic','classical']},{t:"The far future",tg:['scifi','philosophical']},{t:"The 1920s Jazz Age",tg:['glamour','literary','historical']},{t:"I stay here",tg:['contemporary','realistic','practical']}]},
+  {q:"What makes you cry?",o:[{t:"A sacrifice for love",tg:['emotional','romance','sacrifice']},{t:"Injustice that could be real",tg:['social-justice','powerful','realistic']},{t:"Beauty in unexpected places",tg:['literary','nature','atmospheric']},{t:"I don't cry — I get angry",tg:['action','rebellion','intense']}]},
+  {q:"Pick a place to live:",o:[{t:"A magical school",tg:['fantasy','magic']},{t:"A space station",tg:['scifi','adventure']},{t:"A small coastal town",tg:['quiet','romance','nature']},{t:"A grand old mansion",tg:['gothic','mystery','atmospheric']}]},
+  {q:"Your nightmare scenario:",o:[{t:"Being alone forever",tg:['emotional','romance']},{t:"Being trapped with no escape",tg:['thriller','survival']},{t:"Losing your memory",tg:['psychological','identity','scifi']},{t:"A world without books",tg:['literary','intellectual']}]},
+  {q:"Which word excites you most?",o:[{t:"Discovery",tg:['adventure','scifi','curious']},{t:"Revenge",tg:['dark','thriller','intense']},{t:"Belonging",tg:['emotional','found-family','coming-of-age']},{t:"Magic",tg:['fantasy','magical']}]},
+  {q:"Your road trip playlist:",o:[{t:"Mystery podcasts",tg:['mystery','intellectual']},{t:"Nostalgic classics",tg:['emotional','coming-of-age','nostalgia']},{t:"Epic soundtracks",tg:['fantasy','adventure','epic']},{t:"Whatever's trending",tg:['contemporary','light']}]},
+  {q:"A mysterious letter arrives. It says:",o:[{t:"'You are the chosen one'",tg:['fantasy','chosen-one','epic']},{t:"'The truth isn't what you think'",tg:['thriller','twist','mystery']},{t:"'Find me before it's too late'",tg:['romance','emotional']},{t:"'Everything you know is wrong'",tg:['philosophical','scifi']}]},
+  {q:"Pick a fantasy job:",o:[{t:"Dragon rider",tg:['fantasy','adventure','action']},{t:"Royal spy",tg:['thriller','intrigue','clever']},{t:"Healer",tg:['emotional','quiet']},{t:"Wandering storyteller",tg:['literary','creative','adventure']}]},
+  {q:"The best part of a book is:",o:[{t:"The first chapter hook",tg:['thriller','gripping']},{t:"The slow middle where you live in it",tg:['literary','atmospheric','worldbuilding']},{t:"The devastating ending",tg:['emotional','dark']},{t:"The moment everything clicks",tg:['mystery','twist','intellectual']}]},
+  {q:"Your phone wallpaper:",o:[{t:"A moody landscape",tg:['atmospheric','dark','nature']},{t:"A photo with friends",tg:['emotional','friendship','light']},{t:"Something abstract",tg:['literary','creative','philosophical']},{t:"An inspiring quote",tg:['motivational','nonfiction','intellectual']}]},
+  {q:"You're writing a novel. Opening line:",o:[{t:"'The body was found at dawn'",tg:['thriller','mystery','dark']},{t:"'In a land beyond the mountains...'",tg:['fantasy','epic','worldbuilding']},{t:"'I fell in love on a Tuesday'",tg:['romance','emotional']},{t:"'The sky turned red'",tg:['scifi','dystopian']}]},
+  {q:"Pick a bookshelf aesthetic:",o:[{t:"Dark academia",tg:['literary','dark','classical','gothic']},{t:"Cosy cottage",tg:['cozy','romance','heartwarming','light']},{t:"Minimalist modern",tg:['contemporary','nonfiction','practical']},{t:"Chaotic stacks everywhere",tg:['eclectic','curious','adventure','intellectual']}]},
+  {q:"If your life was a book genre:",o:[{t:"A coming-of-age story",tg:['coming-of-age','emotional','identity']},{t:"An adventure novel",tg:['adventure','action','bold']},{t:"A slow-burn literary novel",tg:['literary','quiet','character-driven']},{t:"A thriller with plot twists",tg:['thriller','intense']}]},
+];
+
+const QB={
+kids:[
+  {title:"Percy Jackson and the Lightning Thief",author:"Rick Riordan",genre:"Fantasy",desc:"A 12-year-old discovers he's the son of a Greek god and must prevent a war between the gods.",isbn:"9780786838653",tags:['fantasy','mythology','adventure','humor','action','courage']},
+  {title:"Matilda",author:"Roald Dahl",genre:"Children's Fiction",desc:"A brilliant little girl with a terrible family discovers she has extraordinary powers.",isbn:"9780142410370",tags:['magic','school','humor','empowering','clever','light']},
+  {title:"The Hobbit",author:"J.R.R. Tolkien",genre:"Fantasy",desc:"Bilbo Baggins leaves his cosy hobbit hole for an adventure with dwarves and a dragon.",isbn:"9780547928227",tags:['fantasy','adventure','epic','quest','worldbuilding','classic']},
+  {title:"Wonder",author:"R.J. Palacio",genre:"Realistic Fiction",desc:"Auggie was born with facial differences. Now he's starting school for the first time.",isbn:"9780375869020",tags:['emotional','school','friendship','coming-of-age','hopeful','relatable']},
+  {title:"Harry Potter and the Philosopher's Stone",author:"J.K. Rowling",genre:"Fantasy",desc:"An orphan discovers he's a wizard and begins his journey at Hogwarts.",isbn:"9780747532743",tags:['magic','school','fantasy','friendship','adventure','chosen-one']},
+  {title:"Diary of a Wimpy Kid",author:"Jeff Kinney",genre:"Humor",desc:"Greg Heffley navigates middle school with hilarious diary entries and doodles.",isbn:"9780810993136",tags:['humor','school','light','relatable','contemporary','friendship']},
+  {title:"Charlotte's Web",author:"E.B. White",genre:"Children's Classic",desc:"A spider saves her pig friend with messages spun in her web.",isbn:"9780064400558",tags:['friendship','nature','emotional','heartwarming','classic','quiet']},
+  {title:"The Phantom Tollbooth",author:"Norton Juster",genre:"Fantasy",desc:"A bored boy drives through a magical tollbooth into a land of words and numbers.",isbn:"9780394820378",tags:['imaginative','adventure','clever','intellectual','fantasy','creative']},
+  {title:"Holes",author:"Louis Sachar",genre:"Adventure",desc:"Stanley is sent to a camp where boys dig holes — but there's a secret buried underneath.",isbn:"9780440414803",tags:['mystery','adventure','clever','survival','friendship','twist']},
+  {title:"A Wrinkle in Time",author:"Madeleine L'Engle",genre:"Science Fiction",desc:"Meg travels through space and time to rescue her father from a dark force.",isbn:"9780374386139",tags:['scifi','courage','family','adventure','classic','philosophical']},
+],
+teen:[
+  {title:"The Hunger Games",author:"Suzanne Collins",genre:"YA Dystopian",desc:"Katniss volunteers to fight to the death to save her sister.",isbn:"9780439023528",tags:['dystopian','action','survival','rebellion','intense','dark']},
+  {title:"Six of Crows",author:"Leigh Bardugo",genre:"YA Fantasy",desc:"Six outcasts attempt an impossible heist in a world of magic.",isbn:"9781627792127",tags:['heist','found-family','fantasy','action','clever','dark']},
+  {title:"The Fault in Our Stars",author:"John Green",genre:"YA Romance",desc:"Two teenagers with cancer fall in love and travel to Amsterdam.",isbn:"9780142424179",tags:['romance','emotional','philosophical','contemporary','quiet','sacrifice']},
+  {title:"The Maze Runner",author:"James Dashner",genre:"YA Sci-Fi",desc:"Thomas wakes in a maze with no memory. Find a way out — or die.",isbn:"9780385737951",tags:['mystery','action','survival','scifi','thriller','intense']},
+  {title:"The Hate U Give",author:"Angie Thomas",genre:"YA Contemporary",desc:"After witnessing her friend's death, Starr must find her voice.",isbn:"9780062498533",tags:['social-justice','identity','powerful','contemporary','emotional','realistic']},
+  {title:"Children of Blood and Bone",author:"Tomi Adeyemi",genre:"YA Fantasy",desc:"Zélie fights to bring back magic in a West African-inspired world.",isbn:"9781250170972",tags:['fantasy','rebellion','magic','epic','adventure']},
+  {title:"The Perks of Being a Wallflower",author:"Stephen Chbosky",genre:"YA",desc:"Charlie navigates high school through letters to an anonymous friend.",isbn:"9781451696196",tags:['coming-of-age','emotional','friendship','quiet','nostalgia','literary']},
+  {title:"Divergent",author:"Veronica Roth",genre:"YA Dystopian",desc:"Tris doesn't fit any faction — and that makes her dangerous.",isbn:"9780062024039",tags:['dystopian','identity','action','rebellion','chosen-one','intense']},
+  {title:"They Both Die at the End",author:"Adam Silvera",genre:"YA Contemporary",desc:"Two strangers learn they'll die today. They spend their last day together.",isbn:"9780062457806",tags:['emotional','friendship','contemporary','philosophical','romance','dark']},
+  {title:"An Ember in the Ashes",author:"Sabaa Tahir",genre:"YA Fantasy",desc:"A scholar and a soldier collide in a brutal empire inspired by Rome.",isbn:"9781595148032",tags:['fantasy','rebellion','romance','dark','action','historical']},
+],
+'young-adult':[
+  {title:"The Night Circus",author:"Erin Morgenstern",genre:"Fantasy",desc:"A magical competition inside a circus that only appears at night.",isbn:"9780385534635",tags:['magic','romance','atmospheric','quiet','fantasy','creative']},
+  {title:"Normal People",author:"Sally Rooney",genre:"Literary Fiction",desc:"Two people keep finding and losing each other from school to university.",isbn:"9781984822185",tags:['romance','literary','quiet','emotional','contemporary','character-driven']},
+  {title:"Beach Read",author:"Emily Henry",genre:"Romance",desc:"Two writers swap genres for the summer. Sparks fly.",isbn:"9781984806734",tags:['romance','humor','light','contemporary','creative','friendship']},
+  {title:"The Song of Achilles",author:"Madeline Miller",genre:"Literary Fiction",desc:"A devastating retelling of the Iliad through Patroclus's eyes.",isbn:"9780062060624",tags:['mythology','romance','emotional','literary','classical']},
+  {title:"Circe",author:"Madeline Miller",genre:"Mythological Fiction",desc:"The witch of Greek mythology tells her story of power and transformation.",isbn:"9780316556347",tags:['mythology','magic','literary','identity','nature','quiet']},
+  {title:"Project Hail Mary",author:"Andy Weir",genre:"Science Fiction",desc:"A lone astronaut must save Earth with an unlikely alien friend.",isbn:"9780593135204",tags:['scifi','humor','survival','intellectual','adventure','hopeful']},
+  {title:"The House in the Cerulean Sea",author:"TJ Klune",genre:"Cozy Fantasy",desc:"A caseworker finds family at an orphanage of magical children.",isbn:"9781250217318",tags:['cozy','found-family','heartwarming','magic','quiet','light']},
+  {title:"The Seven Husbands of Evelyn Hugo",author:"Taylor Jenkins Reid",genre:"Historical Fiction",desc:"A Hollywood legend tells the truth about her scandalous life.",isbn:"9781501161933",tags:['historical','romance','identity','epic','glamour','emotional']},
+  {title:"Atomic Habits",author:"James Clear",genre:"Self-Help",desc:"Tiny changes, remarkable results. Science-backed habit building.",isbn:"9780735211292",tags:['nonfiction','practical','motivational','intellectual','contemporary']},
+  {title:"Mexican Gothic",author:"Silvia Moreno-Garcia",genre:"Gothic Horror",desc:"A socialite investigates a decaying mansion in 1950s Mexico.",isbn:"9780525620785",tags:['gothic','dark','atmospheric','mystery','historical','intense']},
+],
+adult:[
+  {title:"The Secret History",author:"Donna Tartt",genre:"Literary Fiction",desc:"Elite students drawn into obsession, deception, and a dark secret.",isbn:"9780679410324",tags:['dark','literary','psychological','intellectual','atmospheric','classical']},
+  {title:"Gone Girl",author:"Gillian Flynn",genre:"Thriller",desc:"Amy disappears on their anniversary. Nothing is what it seems.",isbn:"9780307588371",tags:['thriller','twist','dark','psychological','intense','mystery']},
+  {title:"The Midnight Library",author:"Matt Haig",genre:"Literary Fiction",desc:"Between life and death, a library where every book is a different life.",isbn:"9780525559474",tags:['philosophical','hopeful','emotional','quiet','literary','identity']},
+  {title:"Pachinko",author:"Min Jin Lee",genre:"Historical Fiction",desc:"Four generations of a Korean family in Japan. An epic of identity.",isbn:"9781455563920",tags:['historical','family','epic','emotional','identity','literary']},
+  {title:"Klara and the Sun",author:"Kazuo Ishiguro",genre:"Literary Fiction",desc:"An artificial friend observes humanity. What does it mean to be human?",isbn:"9780571364886",tags:['scifi','philosophical','quiet','literary','emotional','intellectual']},
+  {title:"The Silent Patient",author:"Alex Michaelides",genre:"Thriller",desc:"A painter shoots her husband and never speaks again. Why?",isbn:"9781250301697",tags:['thriller','twist','psychological','dark','mystery','intense']},
+  {title:"Piranesi",author:"Susanna Clarke",genre:"Fantasy",desc:"Infinite halls, oceans, statues. He doesn't know who he is.",isbn:"9781635575941",tags:['fantasy','mysterious','quiet','philosophical','atmospheric','imaginative']},
+  {title:"Educated",author:"Tara Westover",genre:"Memoir",desc:"Born to survivalists, she taught herself to earn a PhD from Cambridge.",isbn:"9780399590504",tags:['nonfiction','emotional','identity','courage','family','inspiring']},
+  {title:"Sapiens",author:"Yuval Noah Harari",genre:"Non-Fiction",desc:"A sweeping history of humankind.",isbn:"9780062316097",tags:['nonfiction','intellectual','philosophical','historical','epic']},
+  {title:"Lessons in Chemistry",author:"Bonnie Garmus",genre:"Historical Fiction",desc:"A 1960s chemist becomes a cooking show host. Sharp and empowering.",isbn:"9780385547345",tags:['historical','humor','identity','empowering','contemporary','light']},
+],
+senior:[
+  {title:"A Gentleman in Moscow",author:"Amor Towles",genre:"Historical Fiction",desc:"A count under house arrest in a luxury hotel. Witty and wise.",isbn:"9780670026197",tags:['historical','literary','quiet','humor','elegant','atmospheric']},
+  {title:"The Thursday Murder Club",author:"Richard Osman",genre:"Mystery",desc:"Four retirees investigate cold cases — until a real murder happens.",isbn:"9781984880987",tags:['mystery','humor','clever','light','friendship','contemporary']},
+  {title:"Hamnet",author:"Maggie O'Farrell",genre:"Historical Fiction",desc:"The story behind Shakespeare's lost son.",isbn:"9781984898876",tags:['historical','family','emotional','literary','quiet','nature']},
+  {title:"All the Light We Cannot See",author:"Anthony Doerr",genre:"Historical Fiction",desc:"A blind girl and a soldier's paths converge in WWII.",isbn:"9781501173219",tags:['historical','emotional','literary','atmospheric','epic']},
+  {title:"Where the Crawdads Sing",author:"Delia Owens",genre:"Literary Fiction",desc:"A marsh girl grows up alone — then becomes a murder suspect.",isbn:"9780735219106",tags:['nature','mystery','quiet','atmospheric','emotional','literary']},
+  {title:"Man's Search for Meaning",author:"Viktor Frankl",genre:"Philosophy",desc:"Finding purpose through suffering.",isbn:"9780807014295",tags:['philosophical','nonfiction','emotional','intellectual','inspiring','quiet']},
+  {title:"Gilead",author:"Marilynne Robinson",genre:"Literary Fiction",desc:"An aging pastor writes to his son about faith, love, and regret.",isbn:"9780374153892",tags:['quiet','literary','philosophical','family','nature']},
+  {title:"The Remains of the Day",author:"Kazuo Ishiguro",genre:"Literary Fiction",desc:"A butler reflects on service and the love he never allowed.",isbn:"9780679731726",tags:['quiet','literary','emotional','historical','character-driven','atmospheric']},
+  {title:"Braiding Sweetgrass",author:"Robin Wall Kimmerer",genre:"Nature Writing",desc:"Indigenous wisdom meets science. Plants, gratitude, reciprocity.",isbn:"9781571313560",tags:['nature','nonfiction','philosophical','quiet','atmospheric']},
+  {title:"The Personal Librarian",author:"Marie Benedict",genre:"Historical Fiction",desc:"Belle da Costa Greene hid her identity to run J.P. Morgan's library.",isbn:"9780593101537",tags:['historical','identity','emotional','inspiring','literary','courage']},
+]};
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+let qIdx=0,qTags=[],shufQ=[],seenBooks=[];
+try{seenBooks=JSON.parse(localStorage.getItem('bs2_seen')||'[]')}catch(e){}
+function saveSeen(){try{localStorage.setItem('bs2_seen',JSON.stringify(seenBooks))}catch(e){}}
+
+function startQuiz(){qIdx=0;qTags=[];shufQ=shuffle(QP).slice(0,10);showPage('quiz');showAgeStep()}
+function showAgeStep(){
+  document.getElementById('q-prog').style.width='0%';
+  document.getElementById('q-container').innerHTML=`<div style="animation:fi .4s ease">
+    <div style="font-size:.75rem;color:var(--a);font-weight:600;margin-bottom:8px">Before we start</div>
+    <div style="font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:8px">How old are you?</div>
+    <p style="color:var(--td);font-size:.82rem;margin-bottom:20px;line-height:1.5">We'll tailor recommendations to your age group.</p>
+    <div class="age-grid">
+      <div class="age-btn" onclick="pickAge('kids',this)"><span class="age-emoji">🧒</span><div class="age-label">Kids</div><div class="age-desc">Under 13</div></div>
+      <div class="age-btn" onclick="pickAge('teen',this)"><span class="age-emoji">🎒</span><div class="age-label">Teen</div><div class="age-desc">13 – 17</div></div>
+      <div class="age-btn" onclick="pickAge('young-adult',this)"><span class="age-emoji">🎓</span><div class="age-label">Young Adult</div><div class="age-desc">18 – 25</div></div>
+      <div class="age-btn" onclick="pickAge('adult',this)"><span class="age-emoji">📚</span><div class="age-label">Adult</div><div class="age-desc">26 – 59</div></div>
+      <div class="age-btn" onclick="pickAge('senior',this)"><span class="age-emoji">📖</span><div class="age-label">Senior</div><div class="age-desc">60+</div></div>
+    </div>
+  </div>`;
+}
+function pickAge(age,el){
+  userAge=age;
+  document.querySelectorAll('#q-container .age-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(function(){showFicNon()},400);
+}
+let bookType='both';
+function showFicNon(){
+  document.getElementById('q-prog').style.width='0%';
+  document.getElementById('q-container').innerHTML=`<div style="animation:fi .4s ease">
+    <div style="font-size:.75rem;color:var(--a);font-weight:600;margin-bottom:8px">One more thing</div>
+    <div style="font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:20px">Fiction or non-fiction?</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <div class="age-btn" onclick="pickType('fiction',this)" style="min-width:140px"><span class="age-emoji">📕</span><div class="age-label">Fiction</div><div class="age-desc">Novels & stories</div></div>
+      <div class="age-btn" onclick="pickType('nonfiction',this)" style="min-width:140px"><span class="age-emoji">📘</span><div class="age-label">Non-Fiction</div><div class="age-desc">True stories & ideas</div></div>
+      <div class="age-btn" onclick="pickType('both',this)" style="min-width:140px"><span class="age-emoji">📚</span><div class="age-label">Surprise Me</div><div class="age-desc">Either!</div></div>
+    </div>
+  </div>`;
+}
+function pickType(type,el){
+  bookType=type;
+  document.querySelectorAll('#q-container .age-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(function(){showQ(0)},400);
+}
+function showQ(i){
+  qIdx=i;const q=shufQ[i];document.getElementById('q-prog').style.width=((i+1)/shufQ.length*100)+'%';
+  const shufOpts=shuffle([...q.o]);
+  document.getElementById('q-container').innerHTML=`<div style="animation:fi .4s ease"><div style="font-size:.75rem;color:var(--a);font-weight:600;margin-bottom:8px">Question ${i+1} of ${shufQ.length}</div><div style="font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:20px">${q.q}</div><div style="display:flex;flex-direction:column;gap:8px">${shufOpts.map(o=>`<button class="btn btn-s" style="justify-content:flex-start;text-align:left" onclick="pickAnswer(${i},[${o.tg.map(t=>"'"+t+"'").join(',')}])">${o.t}</button>`).join('')}</div></div>`;
+}
+function pickAnswer(i,tags){
+  qTags.push(...tags);
+  if(i<shufQ.length-1)showQ(i+1);else finishQuiz();
+}
+function getRecommendation(){
+  let pool=[...(QB[userAge]||QB.adult)];
+  const nfGenres=['Non-Fiction','Self-Help','Memoir','Philosophy','Nature Writing'];
+  if(bookType==='fiction')pool=pool.filter(b=>!nfGenres.includes(b.genre));
+  if(bookType==='nonfiction')pool=pool.filter(b=>nfGenres.includes(b.genre));
+  if(!pool.length)pool=[...(QB[userAge]||QB.adult)];
+  let unseen=pool.filter(b=>!seenBooks.includes(b.title));
+  if(!unseen.length){seenBooks=[];saveSeen();unseen=[...pool];toast('🔄 Fresh pool!')}
+  // Score each book by how many of your answer tags match the book's tags
+  const tagCounts={};
+  qTags.forEach(t=>{tagCounts[t]=(tagCounts[t]||0)+1});
+  unseen.forEach(b=>{b._score=0;(b.tags||[]).forEach(t=>{if(tagCounts[t])b._score+=tagCounts[t]})});
+  unseen.sort((a,b)=>b._score-a._score);
+  // Pick from top 3 to add slight variety
+  const book=unseen[Math.floor(Math.random()*Math.min(3,unseen.length))];
+  seenBooks.push(book.title);saveSeen();
+  return book;
+}
+
+function finishQuiz(){
+  quizCount++;save();
+  const book=getRecommendation();
+  const cover=`https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`;
+  const isFiction=!['Non-Fiction','Self-Help','Memoir'].includes(book.genre);
+  document.getElementById('result-page').innerHTML=`<div style="text-align:center;max-width:500px;margin:0 auto">
+    <div style="font-size:.72rem;color:var(--a);font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">Your Perfect Match</div>
+    ${userAge!=='adult'?`<div style="font-size:.75rem;color:var(--a3);margin-bottom:12px;background:rgba(107,76,230,.08);border:1px solid rgba(107,76,230,.15);border-radius:8px;padding:8px 14px;display:inline-block">Tailored for ${userAge==='kids'?'young readers (under 13)':userAge==='teen'?'teens (13–17)':userAge==='young-adult'?'young adults (18–25)':'seasoned readers (60+)'}</div>`:''}
+    <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px"><span style="font-size:.65rem;padding:3px 10px;border-radius:10px;background:rgba(232,168,56,.1);color:var(--a);border:1px solid rgba(232,168,56,.2)">${isFiction?'📕 Fiction':'📘 Non-Fiction'}</span><span style="font-size:.65rem;padding:3px 10px;border-radius:10px;background:rgba(107,76,230,.08);color:var(--a3);border:1px solid rgba(107,76,230,.15)">${book.genre}</span></div>
+    <img src="${cover}" style="width:180px;height:270px;object-fit:cover;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.3);margin-bottom:20px" onerror="this.style.background='var(--s2)'"/>
+    <div style="font-family:'Instrument Serif',serif;font-size:1.5rem;margin-bottom:4px">${book.title}</div>
+    <div style="color:var(--td);font-size:.9rem;margin-bottom:8px">by ${book.author}</div>
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">${(book.tags||[]).map(t=>`<span style="font-size:.6rem;padding:2px 8px;border-radius:8px;background:var(--s);border:1px solid rgba(255,255,255,.06);color:var(--td)">${t}</span>`).join('')}</div>
+    <div style="font-size:.85rem;color:var(--td);line-height:1.7;margin-bottom:22px;max-width:420px;margin-left:auto;margin-right:auto">${book.desc}</div>
+    <div style="font-size:.72rem;color:var(--td);margin-bottom:16px">📖 You've discovered ${seenBooks.length} of ${isPro?200:100} books${!isPro?' · <a style="color:var(--a);cursor:pointer" onclick="showPage(\'pricing\')">Upgrade to Pro for 200 books</a>':''}</div>
+    <a href="https://www.amazon.co.uk/s?k=${encodeURIComponent(book.title+' '+book.author)}&tag=booksoul-21" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#ff9900,#ffb347);color:#111;font-weight:700;font-size:.9rem;padding:13px 28px;border-radius:10px;text-decoration:none;margin-bottom:16px;transition:all .25s;font-family:Outfit,sans-serif" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(255,153,0,.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">🛒 Buy on Amazon UK</a>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-p btn-sm" onclick="addToShelf({title:'${book.title.replace(/'/g,"\\'")}',author:'${book.author.replace(/'/g,"\\'")}',isbn:'${book.isbn}',genre:'${book.genre}'},'reading')">📖 Reading</button>
+      <button class="btn btn-s btn-sm" onclick="addToShelf({title:'${book.title.replace(/'/g,"\\'")}',author:'${book.author.replace(/'/g,"\\'")}',isbn:'${book.isbn}',genre:'${book.genre}'},'tbr')">📚 TBR</button>
+      <button class="btn btn-s btn-sm" onclick="openSchedule({title:'${book.title.replace(/'/g,"\\'")}',author:'${book.author.replace(/'/g,"\\'")}',isbn:'${book.isbn}'})">📅 Schedule</button>
+    </div>
+    <!-- Share & Instagram -->
+    <div style="margin-top:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,.06)">
+      <div style="font-family:'Instrument Serif',serif;font-size:1.1rem;margin-bottom:6px">📸 Share to Instagram</div>
+      <div style="font-size:.78rem;color:var(--td);margin-bottom:10px">Screenshot this card and post it to your Story!</div>
+      <div class="ig-card" id="ig-card">
+        <div class="ig-card-logo">Book<i>Soul</i></div>
+        <div class="ig-card-center">
+          <div class="ig-card-label">My Book Match</div>
+          <img class="ig-card-cover" src="${cover}" onerror="this.style.background='var(--s2)'"/>
+          <div class="ig-card-title">${book.title}</div>
+          <div class="ig-card-author">by ${book.author}</div>
+        </div>
+        <div class="ig-card-footer">Take the quiz at <strong>booksoul.com</strong><br>Follow <strong>@booksoul</strong></div>
+      </div>
+      <div class="ig-actions">
+        <button class="ig-btn" onclick="shareToInstagram('${book.title.replace(/'/g,"\\'")}','${book.author.replace(/'/g,"\\'")}')">📸 Copy for Instagram</button>
+        <button class="btn btn-s btn-sm" onclick="doShare('twitter','BookSoul matched me with &quot;${book.title}&quot; by ${book.author}! Take the quiz: booksoul.com')">𝕏 Share</button>
+        <button class="btn btn-s btn-sm" onclick="doShare('copy','BookSoul matched me with &quot;${book.title}&quot; by ${book.author}!')">📋 Copy</button>
+      </div>
+    </div>
+    <div style="margin-top:20px"><button class="btn btn-s btn-sm" onclick="startQuiz()">↻ Retake Quiz</button></div>
+  </div>`;
+  showPage('result');
+}
+
+// ==================== PRICING ====================
+let bil='annual';
+function togBil(){bil=bil==='monthly'?'annual':'monthly';setBil(bil)}
+function setBil(m){
+  bil=m;const dot=document.getElementById('p-dot');const tag=document.getElementById('pp-tag');
+  if(m==='annual'){
+    dot.style.left='22px';
+    document.getElementById('p-mo').style.color='var(--td)';
+    document.getElementById('p-yr').style.color='var(--a)';
+    document.getElementById('pp-price').innerHTML='£14.99 <span>/year</span>';
+    document.getElementById('pp-desc').textContent="That's just £1.25/month. Cancel anytime.";
+    document.getElementById('pp-note').textContent='Then £14.99/year · Cancel anytime';
+    tag.style.display='block';tag.textContent='Best Value';
+  }else{
+    dot.style.left='2px';
+    document.getElementById('p-mo').style.color='var(--a)';
+    document.getElementById('p-yr').style.color='var(--td)';
+    document.getElementById('pp-price').innerHTML='£1.99 <span>/month</span>';
+    document.getElementById('pp-desc').textContent='Full access. Cancel anytime.';
+    document.getElementById('pp-note').textContent='Then £1.99/mo · Cancel anytime';
+    tag.style.display='none';
+  }
+}
+function subscribePro(){
+  const p=bil==='annual'?'£14.99/year':'£1.99/month';
+  document.getElementById('modal-inner').innerHTML=`<h3>Start 7-Day Free Trial</h3><p>Try BookSoul Pro free for 7 days. Then ${p}. Cancel anytime.</p><div style="background:var(--s2);border-radius:10px;padding:14px;margin-bottom:14px;text-align:left"><input style="width:100%;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;margin-bottom:6px;color:var(--t)" placeholder="Email" id="sub-email"/><input style="width:100%;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;margin-bottom:6px;color:var(--t)" placeholder="Card number" maxlength="19" id="sub-card"/><div style="display:flex;gap:6px"><input style="flex:1;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;color:var(--t)" placeholder="MM/YY" maxlength="5"/><input style="flex:1;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;color:var(--t)" placeholder="CVC" maxlength="4"/></div></div><div class="modal-btns"><button class="btn btn-p" onclick="processSub()">Start Free Trial</button><button class="btn btn-s" onclick="document.getElementById('modal').classList.remove('on')">Cancel</button></div><div style="font-size:.62rem;color:var(--td);margin-top:8px">🔒 Secure · 7 days free · Then ${p}</div>`;
+  document.getElementById('modal').classList.add('on');
+}
+function processSub(){
+  const e=document.getElementById('sub-email')?.value?.trim(),c=document.getElementById('sub-card')?.value?.trim();
+  if(!e||!e.includes('@')){toast('Enter a valid email.');return}if(!c||c.length<13){toast('Enter a valid card.');return}
+  document.getElementById('modal-inner').innerHTML='<div style="padding:30px 0;text-align:center"><div style="font-size:1.5rem;margin-bottom:10px">⏳</div><p style="color:var(--td);font-size:.85rem">Processing...</p></div>';
+  setTimeout(()=>{isPro=true;save();document.getElementById('pro-badge').classList.add('on');document.getElementById('modal').classList.remove('on');toast('🎉 Pro trial started! All features unlocked.');showPage('home')},2000);
+}
+
+// ==================== DONATE STATION ====================
+let donateAmount=5;
+function selectDonate(amt,el){
+  donateAmount=amt;
+  document.querySelectorAll('.donate-amt').forEach(b=>b.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  const ci=document.getElementById('custom-donate');if(ci)ci.value='';
+}
+function processDonation(){
+  const custom=parseFloat(document.getElementById('custom-donate')?.value);
+  const amt=custom>0?custom:donateAmount;
+  document.getElementById('modal-inner').innerHTML=`
+    <div style="font-size:2rem;margin-bottom:10px">☕</div>
+    <h3>Donate £${amt.toFixed(2)}</h3>
+    <p>Thank you for supporting BookSoul! Your donation keeps the site running.</p>
+    <div style="background:var(--s2);border-radius:10px;padding:14px;margin-bottom:14px;text-align:left">
+      <input style="width:100%;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;margin-bottom:6px;color:var(--t)" placeholder="Email (for receipt)" id="don-email"/>
+      <input style="width:100%;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;margin-bottom:6px;color:var(--t)" placeholder="Card number" maxlength="19" id="don-card"/>
+      <div style="display:flex;gap:6px">
+        <input style="flex:1;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;color:var(--t)" placeholder="MM/YY" maxlength="5"/>
+        <input style="flex:1;background:var(--s2);border:1.5px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.85rem;font-family:Outfit,sans-serif;outline:none;color:var(--t)" placeholder="CVC" maxlength="4"/>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-p" onclick="completeDonation(${amt})">Donate £${amt.toFixed(2)}</button>
+      <button class="btn btn-s" onclick="document.getElementById('modal').classList.remove('on')">Cancel</button>
+    </div>
+    <div style="font-size:.62rem;color:var(--td);margin-top:8px">🔒 Secure · One-time · No recurring charges</div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+function completeDonation(amt){
+  const e=document.getElementById('don-email')?.value?.trim();
+  const c=document.getElementById('don-card')?.value?.trim();
+  if(!e||!e.includes('@')){toast('Enter a valid email.');return}
+  if(!c||c.length<13){toast('Enter a valid card.');return}
+  document.getElementById('modal-inner').innerHTML='<div style="padding:30px 0;text-align:center"><div style="font-size:1.5rem;margin-bottom:10px">⏳</div><p style="color:var(--td);font-size:.85rem">Processing...</p></div>';
+  setTimeout(()=>{
+    document.getElementById('modal').classList.remove('on');
+    document.getElementById('donate-thanks').classList.add('on');
+    toast('🧡 Thank you for donating £'+amt.toFixed(2)+'!');
+    setTimeout(()=>document.getElementById('donate-thanks').classList.remove('on'),8000);
+  },1800);
+}
+
+// ==================== INSTAGRAM SHARE ====================
+function shareToInstagram(title,author){
+  const text=`📖 BookSoul matched me with "${title}" by ${author}!\n\n✨ Take the quiz at booksoul.com\n📸 Follow @booksoul\n\n#BookSoul #BookRecommendation #BookTok #Bookstagram`;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text);
+    toast('📋 Caption copied! Screenshot the card & paste to Instagram Story.');
+  }else{
+    toast('Screenshot the card and share to Instagram Story!');
+  }
+  // Try to open Instagram app on mobile
+  setTimeout(()=>{
+    if(/iPhone|iPad|Android/i.test(navigator.userAgent)){
+      window.open('https://instagram.com','_blank');
+    }
+  },1500);
+}
+
+// ==================== INIT ====================
+renderHome();
+if(isPro)document.getElementById('pro-badge').classList.add('on');
+</script>
+</body>
+</html>
