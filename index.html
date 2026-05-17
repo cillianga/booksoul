@@ -518,20 +518,48 @@ function doShare(p,txt){
 async function doSearch(){
   const q=document.getElementById('s-input').value.trim();if(!q){toast('Type something!');return}
   document.getElementById('s-results').innerHTML='<div class="empty">🔍 Searching for "'+q+'"...</div>';
+  // Try Google Books first, then Open Library as backup
   try{
-    const r=await fetch('https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(q)+'&maxResults=12&country=GB');
-    if(!r.ok){document.getElementById('s-results').innerHTML='<div class="empty"><span>⚠️</span>Search service unavailable. Try again in a moment.</div>';return}
-    const d=await r.json();
-    if(!d.items||!d.items.length){document.getElementById('s-results').innerHTML='<div class="empty"><span>📭</span>No books found for "'+q+'". Try a different title or author name.</div>';return}
-    document.getElementById('s-results').innerHTML=`<div class="results-grid">${d.items.map(it=>{
-      const v=it.volumeInfo||{},t=v.title||'',a=(v.authors||['Unknown']).join(', ');
-      const th=v.imageLinks?(v.imageLinks.thumbnail||'').replace('http:','https:'):'';
-      const isbn=(v.industryIdentifiers||[]).find(i=>i.type==='ISBN_13')?.identifier||'';
-      const bk=JSON.stringify({title:t,author:a,isbn,genre:v.categories?.[0]||''}).replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      const amzUrl='https://www.amazon.co.uk/s?k='+encodeURIComponent(t+' '+a)+'&tag=booksoul-21';
-      return`<div class="book-card"><img class="book-cover" src="${th}" alt="${t}" onerror="this.style.display='none'"/><div class="book-info"><div class="book-title">${t}</div><div class="book-author">${a}</div><div class="book-actions"><a class="ba-btn" href="${amzUrl}" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a><button class="ba-btn" onclick='addToShelf(${bk.replace(/&quot;/g,"\\\"")}, "reading")'>📖 Reading</button><button class="ba-btn" onclick='addToShelf(${bk.replace(/&quot;/g,"\\\"")}, "tbr")'>📚 TBR</button><button class="ba-btn" onclick='addToShelf(${bk.replace(/&quot;/g,"\\\"")}, "dnf")'>🚫 DNF</button><button class="ba-btn" onclick='openSchedule(${bk.replace(/&quot;/g,"\\\"")})'>📅 Schedule</button></div></div></div>`;
-    }).join('')}</div>`;
-  }catch(e){document.getElementById('s-results').innerHTML='<div class="empty"><span>⚠️</span>Could not connect to book search. Make sure you have internet and try again.<br><br><span style="font-size:.7rem;color:var(--td)">Error: '+e.message+'</span></div>'}
+    const r=await fetch('https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(q)+'&maxResults=12');
+    if(r.ok){
+      const d=await r.json();
+      if(d.items&&d.items.length){
+        renderGoogleResults(d.items);return;
+      }
+    }
+  }catch(e){}
+  // Backup: Open Library search
+  try{
+    const r2=await fetch('https://openlibrary.org/search.json?q='+encodeURIComponent(q)+'&limit=12');
+    if(r2.ok){
+      const d2=await r2.json();
+      if(d2.docs&&d2.docs.length){
+        renderOpenLibResults(d2.docs);return;
+      }
+    }
+  }catch(e2){}
+  document.getElementById('s-results').innerHTML='<div class="empty"><span>📭</span>Could not find books. Check your internet connection and try again.<br><br><button class="btn btn-s btn-sm" onclick="doSearch()">Try Again</button></div>';
+}
+function renderGoogleResults(items){
+  document.getElementById('s-results').innerHTML='<div class="results-grid">'+items.map(function(it){
+    var v=it.volumeInfo||{},t=v.title||'',a=(v.authors||['Unknown']).join(', ');
+    var th=v.imageLinks?(v.imageLinks.thumbnail||'').replace('http:','https:'):'';
+    var isbn=(v.industryIdentifiers||[]).find(function(i){return i.type==='ISBN_13'})||{};
+    var isbnVal=isbn.identifier||'';
+    var bk=JSON.stringify({title:t,author:a,isbn:isbnVal,genre:(v.categories||[''])[0]}).replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var amzUrl='https://www.amazon.co.uk/s?k='+encodeURIComponent(t+' '+a)+'&tag=booksoul-21';
+    return'<div class="book-card"><img class="book-cover" src="'+th+'" alt="'+t+'" onerror="this.style.display=\'none\'"/><div class="book-info"><div class="book-title">'+t+'</div><div class="book-author">'+a+'</div><div class="book-actions"><a class="ba-btn" href="'+amzUrl+'" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "reading")\'>📖 Reading</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "tbr")\'>📚 TBR</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "dnf")\'>🚫 DNF</button><button class="ba-btn" onclick=\'openSchedule('+bk.replace(/&quot;/g,'\\"')+')\'>📅 Schedule</button></div></div></div>';
+  }).join('')+'</div>';
+}
+function renderOpenLibResults(docs){
+  document.getElementById('s-results').innerHTML='<div class="results-grid">'+docs.map(function(d){
+    var t=d.title||'',a=(d.author_name||['Unknown']).join(', ');
+    var isbn=(d.isbn||[''])[0]||'';
+    var cover=d.cover_i?'https://covers.openlibrary.org/b/id/'+d.cover_i+'-M.jpg':'';
+    var bk=JSON.stringify({title:t,author:a,isbn:isbn,genre:''}).replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var amzUrl='https://www.amazon.co.uk/s?k='+encodeURIComponent(t+' '+a)+'&tag=booksoul-21';
+    return'<div class="book-card">'+(cover?'<img class="book-cover" src="'+cover+'" alt="'+t+'" onerror="this.style.display=\'none\'"/>':'')+'<div class="book-info"><div class="book-title">'+t+'</div><div class="book-author">'+a+'</div><div class="book-actions"><a class="ba-btn" href="'+amzUrl+'" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "reading")\'>📖 Reading</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "tbr")\'>📚 TBR</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "dnf")\'>🚫 DNF</button><button class="ba-btn" onclick=\'openSchedule('+bk.replace(/&quot;/g,'\\"')+')\'>📅 Schedule</button></div></div></div>';
+  }).join('')+'</div>';
 }
 
 // ==================== SHELVES ====================
