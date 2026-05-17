@@ -414,8 +414,8 @@ footer{text-align:center;padding:30px 24px;border-top:1px solid rgba(255,255,255
         <li><strong>Priority new books</strong> added to your pool weekly</li>
         <li><strong>Export your reading data</strong></li>
       </ul>
-      <button class="btn btn-p" style="width:100%" onclick="subscribePro()">Start 7-Day Free Trial</button>
-      <div style="text-align:center;font-size:.68rem;color:var(--td);margin-top:6px" id="pp-note">Then £14.99/year · Cancel anytime</div>
+      <button class="btn btn-p" style="width:100%" onclick="subscribePro()">🚧 Coming Soon</button>
+      <div style="text-align:center;font-size:.68rem;color:var(--td);margin-top:6px" id="pp-note">Payments launching soon · Join the waitlist</div>
     </div>
   </div>
 </div>
@@ -541,25 +541,53 @@ async function doSearch(){
   document.getElementById('s-results').innerHTML='<div class="empty"><span>📭</span>Could not find books. Check your internet connection and try again.<br><br><button class="btn btn-s btn-sm" onclick="doSearch()">Try Again</button></div>';
 }
 function renderGoogleResults(items){
-  document.getElementById('s-results').innerHTML='<div class="results-grid">'+items.map(function(it){
+  var html='<div class="results-grid">';
+  items.forEach(function(it,idx){
     var v=it.volumeInfo||{},t=v.title||'',a=(v.authors||['Unknown']).join(', ');
     var th=v.imageLinks?(v.imageLinks.thumbnail||'').replace('http:','https:'):'';
     var isbn=(v.industryIdentifiers||[]).find(function(i){return i.type==='ISBN_13'})||{};
     var isbnVal=isbn.identifier||'';
-    var bk=JSON.stringify({title:t,author:a,isbn:isbnVal,genre:(v.categories||[''])[0]}).replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var genre=(v.categories||[''])[0];
     var amzUrl='https://www.amazon.co.uk/s?k='+encodeURIComponent(t+' '+a)+'&tag=booksoul-21';
-    return'<div class="book-card"><img class="book-cover" src="'+th+'" alt="'+t+'" onerror="this.style.display=\'none\'"/><div class="book-info"><div class="book-title">'+t+'</div><div class="book-author">'+a+'</div><div class="book-actions"><a class="ba-btn" href="'+amzUrl+'" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "reading")\'>📖 Reading</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "tbr")\'>📚 TBR</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "dnf")\'>🚫 DNF</button><button class="ba-btn" onclick=\'openSchedule('+bk.replace(/&quot;/g,'\\"')+')\'>📅 Schedule</button></div></div></div>';
-  }).join('')+'</div>';
+    // Store book data in a global array for safe onclick access
+    if(!window._sr)window._sr=[];
+    window._sr[idx]={title:t,author:a,isbn:isbnVal,genre:genre};
+    html+='<div class="book-card">';
+    if(th)html+='<img class="book-cover" src="'+th+'" alt="" onerror="this.style.display=\'none\'"/>';
+    html+='<div class="book-info"><div class="book-title">'+t+'</div><div class="book-author">'+a+'</div>';
+    html+='<div class="book-actions">';
+    html+='<a class="ba-btn" href="'+amzUrl+'" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a>';
+    html+='<button class="ba-btn" onclick="addToShelf(window._sr['+idx+'],\'reading\')">📖 Reading</button>';
+    html+='<button class="ba-btn" onclick="addToShelf(window._sr['+idx+'],\'tbr\')">📚 TBR</button>';
+    html+='<button class="ba-btn" onclick="addToShelf(window._sr['+idx+'],\'dnf\')">🚫 DNF</button>';
+    html+='<button class="ba-btn" onclick="openSchedule(window._sr['+idx+'])">📅 Schedule</button>';
+    html+='</div></div></div>';
+  });
+  html+='</div>';
+  document.getElementById('s-results').innerHTML=html;
 }
 function renderOpenLibResults(docs){
-  document.getElementById('s-results').innerHTML='<div class="results-grid">'+docs.map(function(d){
+  var html='<div class="results-grid">';
+  docs.forEach(function(d,idx){
     var t=d.title||'',a=(d.author_name||['Unknown']).join(', ');
     var isbn=(d.isbn||[''])[0]||'';
     var cover=d.cover_i?'https://covers.openlibrary.org/b/id/'+d.cover_i+'-M.jpg':'';
-    var bk=JSON.stringify({title:t,author:a,isbn:isbn,genre:''}).replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var amzUrl='https://www.amazon.co.uk/s?k='+encodeURIComponent(t+' '+a)+'&tag=booksoul-21';
-    return'<div class="book-card">'+(cover?'<img class="book-cover" src="'+cover+'" alt="'+t+'" onerror="this.style.display=\'none\'"/>':'')+'<div class="book-info"><div class="book-title">'+t+'</div><div class="book-author">'+a+'</div><div class="book-actions"><a class="ba-btn" href="'+amzUrl+'" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "reading")\'>📖 Reading</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "tbr")\'>📚 TBR</button><button class="ba-btn" onclick=\'addToShelf('+bk.replace(/&quot;/g,'\\"')+', "dnf")\'>🚫 DNF</button><button class="ba-btn" onclick=\'openSchedule('+bk.replace(/&quot;/g,'\\"')+')\'>📅 Schedule</button></div></div></div>';
-  }).join('')+'</div>';
+    if(!window._sr2)window._sr2=[];
+    window._sr2[idx]={title:t,author:a,isbn:isbn,genre:''};
+    html+='<div class="book-card">';
+    if(cover)html+='<img class="book-cover" src="'+cover+'" alt="" onerror="this.style.display=\'none\'"/>';
+    html+='<div class="book-info"><div class="book-title">'+t+'</div><div class="book-author">'+a+'</div>';
+    html+='<div class="book-actions">';
+    html+='<a class="ba-btn" href="'+amzUrl+'" target="_blank" style="background:rgba(255,153,0,.1);color:#ff9900;border-color:rgba(255,153,0,.25);text-decoration:none;font-weight:600">🛒 Buy</a>';
+    html+='<button class="ba-btn" onclick="addToShelf(window._sr2['+idx+'],\'reading\')">📖 Reading</button>';
+    html+='<button class="ba-btn" onclick="addToShelf(window._sr2['+idx+'],\'tbr\')">📚 TBR</button>';
+    html+='<button class="ba-btn" onclick="addToShelf(window._sr2['+idx+'],\'dnf\')">🚫 DNF</button>';
+    html+='<button class="ba-btn" onclick="openSchedule(window._sr2['+idx+'])">📅 Schedule</button>';
+    html+='</div></div></div>';
+  });
+  html+='</div>';
+  document.getElementById('s-results').innerHTML=html;
 }
 
 // ==================== SHELVES ====================
@@ -627,12 +655,16 @@ function removeScheduled(title){scheduled=scheduled.filter(s=>s.title!==title);s
 
 // ==================== TIMELINE ====================
 const releases=[
-  {title:"Onyx Storm",author:"Rebecca Yarros",date:"2025-01-21",genre:"Fantasy Romance",desc:"Third Empyrean book. Dragons, war, devastating revelations."},
-  {title:"Sunrise on the Reaping",author:"Suzanne Collins",date:"2025-03-18",genre:"YA Dystopian",desc:"Hunger Games prequel — the Second Quarter Quell."},
-  {title:"The Familiar",author:"Leigh Bardugo",date:"2025-04-01",genre:"Fantasy",desc:"A servant in the Spanish Golden Age discovers a dark gift."},
-  {title:"Intermezzo",author:"Sally Rooney",date:"2025-09-24",genre:"Literary Fiction",desc:"Two brothers navigate grief and love."},
-  {title:"Pyre",author:"Rebecca Yarros",date:"2026-07-01",genre:"Fantasy Romance",desc:"Fourth Empyrean book. What will Violet sacrifice?"},
-  {title:"Project Hail Mary Sequel",author:"Andy Weir",date:"2026-11-01",genre:"Sci-Fi",desc:"The long-awaited follow-up. Rocky and Grace continue?"},
+  {title:"The Ballad of Falling Dragons",author:"Sarah A. Parker",genre:"Fantasy",desc:"The sequel to When the Moon Hatched. An immersive fantasy with sprayed edges and full-coloured endpapers.",date:"2026-05-19"},
+  {title:"When the Moon Hatched (Illustrated Edition)",author:"Sarah A. Parker",genre:"Fantasy Romance",desc:"A stunning special edition of the bestselling romantasy phenomenon.",date:"2026-05-19"},
+  {title:"Big Little Lies sequel",author:"Liane Moriarty",genre:"Literary Fiction",desc:"Liane Moriarty's first-ever sequel, returning to the world of Big Little Lies with wit and compassion.",date:"2026-06-01"},
+  {title:"Divergent: Reimagined",author:"Veronica Roth",genre:"YA Dystopian",desc:"The worldwide sensation reimagined. A bold new Divergent duology from the #1 bestselling author.",date:"2026-10-06"},
+  {title:"A Court of Thorns and Roses 6",author:"Sarah J. Maas",genre:"Fantasy Romance",desc:"Sarah J. Maas returns to the courts of Prythian. Romance, danger, and intrigue await.",date:"2026-10-27"},
+  {title:"Divergent Duology Conclusion",author:"Veronica Roth",genre:"YA Dystopian",desc:"The bold new Divergent duology comes to an unforgettable conclusion.",date:"2027-02-02"},
+  {title:"A Court of Thorns and Roses 7",author:"Sarah J. Maas",genre:"Fantasy Romance",desc:"The magic continues in the next exciting installment of the ACOTAR series.",date:"2027-01-12"},
+  {title:"Sunderworld Vol 2",author:"Ransom Riggs",genre:"YA Fantasy",desc:"The sequel to The Extraordinary Disappointments of Leopold Berry. More magic and suspense from the author of Miss Peregrine's.",date:"2026-09-01"},
+  {title:"26 Beauties",author:"James Patterson",genre:"Thriller",desc:"Women's Murder Club #26. The long-running thriller series continues.",date:"2026-05-07"},
+  {title:"A River Red With Blood",author:"John Connolly",genre:"Thriller",desc:"Charlie Parker #23. The beloved supernatural thriller series returns.",date:"2026-05-07"},
 ];
 let tlFilter='all';
 function renderTimeline(){
